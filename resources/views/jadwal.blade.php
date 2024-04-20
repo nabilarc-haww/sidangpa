@@ -77,6 +77,11 @@
                       <option selected>Tahapan Sidang</option>
                       <option>Sidang Proposal Proyek Akhir (SPPA)</option>
                     </select>
+                </div>
+                <div class="col-md-12">
+                    <label for="fileUpload" class="form-label">Upload File</label>
+                    <input type="file" class="form-control" id="fileUpload">
+                </div>
                 <div class="col-12 mt-3 mb-3">
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="gridCheck">
