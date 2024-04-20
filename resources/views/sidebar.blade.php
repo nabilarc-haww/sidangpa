@@ -49,13 +49,6 @@
         </a>
       </li><!-- End Nav -->
 
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="index.html">
-          <i class="bi bi-gear"></i>
-          <span>Pengaturan</span>
-        </a>
-      </li><!-- End Nav -->
-
     </ul>
 
   </aside><!-- End Sidebar-->

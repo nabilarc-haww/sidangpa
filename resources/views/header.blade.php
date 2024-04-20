@@ -3,8 +3,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
-        <img src="{{ asset('style/assets/img/logo.png') }}" alt="">
-        <span class="d-none d-lg-block">SidangPA</span>
+        <img src="{{ asset('style/assets/img/koi.png') }}" alt="">
+        <span class="d-none d-lg-block">SCHEDU</span>
       </a>
     </div><!-- End Logo -->
 

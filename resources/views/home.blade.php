@@ -16,10 +16,10 @@
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
-      <div class="row">
+      {{-- <div class="row"> --}}
 
         <!-- Left side columns -->
-        <div class="col-lg-8">
+        <div class="col-lg-12">
           <div class="row">
 
             <!-- Sales Card -->
@@ -34,8 +34,7 @@
                       <i class="bi bi-person-vcard"></i>
                     </div>
                     <div class="ps-3">
-                      <h6>67</h6>
-                         <span class="text-muted small pt-2 ps-1">orang</span>
+                      <h6>67 <label class="small pt-2 fs-6 fw-light">Orang</label> </h6>
                     </div>
                   </div>
                 </div>
@@ -55,8 +54,7 @@
                       <i class="bi bi-person-video3"></i>
                     </div>
                     <div class="ps-3">
-                      <h6>89</h6>
-                        <span class="text-muted small pt-2 ps-1">orang</span>
+                      <h6>89 <label class="small pt-2 fs-6 fw-light">Orang</label> </h6>
                     </div>
                   </div>
                 </div>
@@ -77,8 +75,7 @@
                       <i class="bi bi-people"></i>
                     </div>
                     <div class="ps-3">
-                      <h6>24</h6>
-                         <span class="text-muted small pt-2 ps-1">group</span>
+                      <h6>24 <label class="small pt-2 fs-6 fw-light">Group</label> </h6>
 
                     </div>
                   </div>
@@ -91,10 +88,67 @@
           </div>
         </div><!-- End Left side columns -->
 
-        <!-- Right side columns -->
-        <div class="col-sm-8">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="card p-5">
+              <div class="card-title">
+                <i class="bi bi-quote"></i>
+                <a style="color: 4154F1; font-size: 26px;">Temukan</a> 
+                <a style="font-size: 26px;">Kenyamanan Penjadwalan dengan</a> 
+                <u style="color: 4154F1; font-size: 26px;">SCHEDU</u>
+                <i class="bi bi-quote"></i>
+              </div>
+              <p class="lh-lg">Platform penjadwalan sidang proyek akhir yang menghadirkan kemudahan dan efisiensi dalam membuat jadwal sidang Anda. </p>
+              <div class="row">
+                <div class="col-1">
+                  {{-- <i class="bi bi-caret-right-fill" style="color: 4154F1; width: 30; height: 30;"></i> --}}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="rgba(66,84,241,1)" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                    <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                  </svg>
+                </div>
+                <div class="col-10">
+                  <div class="card ps-3 pe-3 pt-2 pb-2" style="background-color: EDEEFD; box-shadow: none; margin-bottom: 15px;">
+                    <label>Melakukan <b>Generate Jadwal</b> dengan mudah dan otomatis.</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="rgba(66,84,241,1)" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                    <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                  </svg>
+                </div>
+                <div class="col-10">
+                  <div class="card ps-3 pe-3 pt-2 pb-2" style="background-color: EDEEFD;box-shadow: none; margin-bottom: 15px;">
+                    <label>Menyediakan informasi <b>Sidang Proyek Akhir</b> dalam satu tempat yang mudah.</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="rgba(66,84,241,1)" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                    <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                  </svg>
+                </div>
+                <div class="col-10">
+                  <div class="card ps-3 pe-3 pt-2 pb-2" style="background-color: EDEEFD;box-shadow: none;margin-bottom: 15px;">
+                    <label>Membagikan <b>Pengumuman</b> dengan lebih efektif dan efisien.</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 ps-5 pe-0">
+                  <img src="{{ asset('style/assets/img/ilustrasi.svg') }}" style="width: 200px; height: 200px;" alt="">
+                </div>
+                <div class="col-6 p-5">
+                  <i>SCHEDU, teman terpercaya Anda dalam menyusun jadwal sidang proyek akhir !</i>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <!-- News & Updates Traffic -->
+                  <!-- News & Updates Traffic -->
+          <div class="col-lg-6">
           <div class="card">
             <div class="filter">
               <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
@@ -144,50 +198,12 @@
                 </div>
 
               </div><!-- End sidebar recent posts-->
-
+            </div>
             </div>
           </div><!-- End News & Updates -->
+        </div>
 
-        </div><!-- End Right side columns -->
-
-        {{-- <div class="col-lg-4">
-          <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Advanced Content</h5>
-
-            <!-- List group with Advanced Contents -->
-            <div class="list-group">
-              <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
-                <div class="d-flex w-100 justify-content-between">
-                  <h5 class="mb-1">List group item heading</h5>
-                  <small>3 days ago</small>
-                </div>
-                <p class="mb-1">Some placeholder content in a paragraph.</p>
-                <small>And some small print.</small>
-              </a>
-              <a href="#" class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                  <h5 class="mb-1">List group item heading</h5>
-                  <small class="text-muted">3 days ago</small>
-                </div>
-                <p class="mb-1">Some placeholder content in a paragraph.</p>
-                <small class="text-muted">And some muted small print.</small>
-              </a>
-              <a href="#" class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                  <h5 class="mb-1">List group item heading</h5>
-                  <small class="text-muted">3 days ago</small>
-                </div>
-                <p class="mb-1">Some placeholder content in a paragraph.</p>
-                <small class="text-muted">And some muted small print.</small>
-              </a>
-            </div><!-- End List group Advanced Content -->
-
-          </div>
-          </div>
-        </div> --}}
-
-      </div>
+      {{-- </div> --}}
     </section>
 
   </main><!-- End #main -->

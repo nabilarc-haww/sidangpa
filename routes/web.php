@@ -20,3 +20,7 @@ Route::get('/',function () {
 Route::get('jadwal',function () {
     return view('jadwal');
 });
+
+Route::get('generate',function () {
+    return view('generate');
+});
