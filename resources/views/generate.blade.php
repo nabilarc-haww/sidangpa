@@ -27,7 +27,7 @@
             <p>Kami membantumu melakukan penjadwalan sidang proyek akhir dengan lebih efektif dan efisien</p>
 
             <!-- Form untuk filter data -->
-            <form action="{{ route('proyek-akhir.generate') }}" method="GET">
+            <form action="{{ route('proyek-akhir.getData') }}" method="GET">
               @csrf
               <div class="row">
                 <div class="col-md-4">

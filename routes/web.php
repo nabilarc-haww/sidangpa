@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProyekAkhirController;
+use App\Http\Controllers\HeaderController;
+use App\Http\Controllers\RisetGroupController;
 
 
 /*
@@ -36,13 +38,22 @@ Route::get('/',function () {
     return view('home');
 });
 
-Route::get('jadwal',function () {
+// Route::get('/proyek-akhir/jadwal',function () {
+//     return view('jadwal');
+// });
+Route::get('/proyek-akhir/generate', [ProyekAkhirController::class, 'getData'])->name('proyek-akhir.getData');
+Route::post('/store-header', [HeaderController::class, 'store'])->name('header.store');
+
+Route::post('/proyek-akhir/import', [ProyekAkhirController::class, 'import'])->name('proyek-akhir.import');
+
+// Route::get('/proyek-akhir/jadwal', function () {
+//     return view('/proyek-akhir/generate');
+// });
+
+Route::get('/proyek-akhir/jadwal',function () {
     return view('jadwal');
 });
 
-// Route::get('generate',function () {
-//     return view('generate');
-// });
+Route::get('/riset-group', [RisetGroupController::class, 'getAllData']);
 
-Route::get('/proyek-akhir/generate', [ProyekAkhirController::class, 'generate'])->name('proyek-akhir.generate');
-
+// Route::get('/dosen', [DosenController::class, 'getAllData']);

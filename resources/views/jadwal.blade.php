@@ -45,63 +45,64 @@
         </div>
     </div>
     <div class="col-lg-6">
-        <div class="card p-3">
-            <div class="card-body">
+      <div class="card p-3">
+          <div class="card-body">
               <h5 class="card-title">Mulai Pembuatan Jadwalmu !</h5>
 
-              <!-- Multi Columns Form -->
-              <form class="row g-3">
-                <div class="col-md-12">
-                  <label for="" class="form-label">Judul Jadwal</label>
-                  <textarea style="height: 100px;" type="text" class="form-control" id="" placeholder="masukkan judulmu">
-                  </textarea>
-                </div>
-                <div class="col-md-12">
-                  <label for="inputState" class="form-label">Program Studi</label>
-                  <select id="inputState" class="form-select" placeholder="pilihlah program studi">
-                    <option selected>Program Studi</option>
-                    <option>D3 Teknik Informatika</option>
-                  </select>
-                </div>
-                <div class="col-md-6">
-                  <label for="inputZip" class="form-label">Tanggal</label>
-                  <input type="text" class="form-control" id="inputZip" placeholder="pilih tanggal">
-                </div>
-                <div class="col-md-6">
-                    <label for="inputZip" class="form-label">Waktu</label>
-                    <input type="text" class="form-control" id="inputZip" placeholder="masukkan waktu">
-                </div>
-                <div class="col-md-12">
-                    <label for="inputState" class="form-label">Tahapan Sidang</label>
-                    <select id="inputState" class="form-select" placeholder="pilihlah tahapan sidang">
-                      <option selected>Tahapan Sidang</option>
-                      <option>Sidang Proposal Proyek Akhir (SPPA)</option>
-                    </select>
-                </div>
+              <!-- <form action="{{ route('header.store') }}" method="POST">
+                  @csrf
+                  <div class="col-md-12">
+                      <label for="" class="form-label">Judul Jadwal</label>
+                      <textarea name="judul" style="height: 100px;" type="text" class="form-control" placeholder="Masukkan judulmu"></textarea>
+                  </div>
+                  <div class="col-md-12">
+                      <label for="inputState" class="form-label">Program Studi</label>
+                      <select name="prodi" id="inputState" class="form-select" placeholder="Pilihlah program studi">
+                          <option selected disabled>Program Studi</option>
+                          <option>D3 Teknik Informatika</option>
+                      </select>
+                  </div>
+                  <div class="col-md-6">
+                      <label for="inputZip" class="form-label">Tanggal</label>
+                      <input name="tanggal_waktu" type="date" class="form-control" id="inputZip" placeholder="Pilih tanggal">
+                  </div>
+                  <div class="col-md-6">
+                      <label for="inputZip" class="form-label">Waktu</label>
+                      <input type="time" class="form-control" id="inputZip" placeholder="Masukkan waktu">
+                  </div>
+                  <div class="col-md-12">
+                      <label for="inputState" class="form-label">Tahapan Sidang</label>
+                      <select name="tahapan_sidang" id="inputState" class="form-select" placeholder="Pilihlah tahapan sidang">
+                          <option selected disabled>Tahapan Sidang</option>
+                          <option>Sidang Proposal Proyek Akhir (SPPA)</option>
+                      </select>
+                  </div>
+                  <div class="col-12 mt-3 mb-3">
+                      <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="gridCheck">
+                          <label class="form-check-label" for="gridCheck">
+                              Apakah data yang anda masukkan sudah benar?
+                          </label>
+                      </div>
+                  </div>
+                  <div class="text-center">
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <button type="reset" class="btn btn-secondary">Reset</button>
+                  </div>
+              </form> -->
+
+              <form class="row g-3" action="{{ route('proyek-akhir.import') }}" method="post" enctype="multipart/form-data">
+                @csrf
                 <div class="col-md-12">
                     <label for="fileUpload" class="form-label">Upload File</label>
-                    <input type="file" class="form-control" id="fileUpload">
+                    <input type="file" class="form-control" id="fileUpload" name="fileUpload">
                 </div>
-                <div class="col-12 mt-3 mb-3">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="gridCheck">
-                    <label class="form-check-label" for="gridCheck">
-                      Apakah data yang anda masukkan sudah benar?
-                    </label>
-                  </div>
-                </div>
-                <div class="text-center">
-                  <button type="submit" class="btn btn-primary">Submit</button>
-                  <button type="reset" class="btn btn-secondary">Reset</button>
-                </div>
-              </form><!-- End Multi Columns Form -->
-
-            </div>
+                <button type="submit" class="btn btn-primary">Import</button>
+                </form>
           </div>
-    </div>
+      </div>
+  </div>
 </div>
-
-
 </main>
 
 </body>

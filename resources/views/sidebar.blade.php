@@ -11,14 +11,14 @@
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="index.html">
+        <a class="nav-link collapsed" href="/proyek-akhir/generate">
           <i class="bi bi-kanban"></i>
           <span>Proyek Akhir</span>
         </a>
       </li><!-- End Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="index.html">
+        <a class="nav-link collapsed" href="/riset-group">
           <i class="bi bi-people"></i>
           <span>Riset Group</span>
         </a>
@@ -30,12 +30,12 @@
         </a>
         <ul id="tables-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
           <li>
-            <a href="jadwal">
+            <a href="/proyek-akhir/jadwal">
               <i class="bi bi-circle"></i><span>Generate Jadwal</span>
             </a>
           </li>
           <li>
-            <a href="jadwal">
+            <a href="/proyek-akhir/generate">
               <i class="bi bi-circle"></i><span>Hasil Penjadwalan</span>
             </a>
           </li>
