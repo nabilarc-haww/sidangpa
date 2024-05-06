@@ -23,27 +23,25 @@
 
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Generate Jadwal</h5>
-            <p>Kami membantumu melakukan penjadwalan sidang proyek akhir dengan lebih efektif dan efisien</p>
-            <!-- Table untuk menampilkan data -->
-            <table>
+            <h5 class="card-title">Daftar Riset Group</h5>
+            <p>Anda dapat melihat data riset group beserta dosen yang menjadi anggotanya</p>
+
+          <!-- Table untuk menampilkan data -->
+            <table class="table datatable">
               <thead>
                 <tr>
-                  <th>Riset Group</th>
-                  <th>Nama dosen</th>
-                  <th>Ruang</th>
+                  <th>Nama Riset Group</th>
+                  <th>Nama Dosen</th>
                 </tr>
               </thead>
               <tbody>
-              <tbody>
-                    @foreach($riset_group as $item)
-                    <tr>
-                        <td>{{ $item['riset_group']['riset_group'] }}</td>
-                        <td>{{ $item['nama_dosen'] }}</td>
-                        <td>{{ $item['ruang']['nama_ruang'] }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
+                @foreach($riset_group as $item)
+                <tr>
+                  <td>{{ $item['riset_group']['riset_group'] }}</td>
+                  <td>{{ $item['nama_dosen'] }}</td>
+                  {{-- <td>{{ $item['ruang']['nama_ruang'] }}</td> --}}
+                </tr>
+                @endforeach
               </tbody>
             </table>
             <!-- End Table -->

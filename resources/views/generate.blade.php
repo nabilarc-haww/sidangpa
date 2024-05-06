@@ -23,30 +23,12 @@
 
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Generate Jadwal</h5>
-            <p>Kami membantumu melakukan penjadwalan sidang proyek akhir dengan lebih efektif dan efisien</p>
+            <h5 class="card-title">Data Proyek Akhir</h5>
+            <p>Anda dapat melihat data proyek disini diantaranya judul proyek akhir, mahasiswa dan dosen pembimbingnya.</p>
 
             <!-- Form untuk filter data -->
             <form action="{{ route('proyek-akhir.getData') }}" method="GET">
               @csrf
-              <div class="row">
-                <div class="col-md-4">
-                  <label for="inputEmail5" class="form-label">Dosen Pembimbing Utama</label>
-                  <input type="email" class="form-control" id="inputEmail5" name="dosen_pembimbing">
-                </div>
-                <div class="col-md-4">
-                  <label for="inputRisetGroup" class="form-label">Riset Group</label>
-                  <select class="form-select" name="riset_group">
-                    <option selected>Data Centric Artificial Intelligence and e-Business System</option>
-                    <option value="1">Health Informatics</option>
-                    <option value="2">Agile Product Development</option>
-                  </select>
-                </div>
-                <div class="col-md-4" style="padding-top: 30px">
-                  <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-              </div>
-            </form>
             <!-- End Form -->
 
             <!-- Table untuk menampilkan data -->

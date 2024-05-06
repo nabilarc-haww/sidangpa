@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProyekAkhirController;
 use App\Http\Controllers\HeaderController;
 use App\Http\Controllers\RisetGroupController;
-
+use App\Http\Controllers\PengumumanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,3 +57,16 @@ Route::get('/proyek-akhir/jadwal',function () {
 Route::get('/riset-group', [RisetGroupController::class, 'getAllData']);
 
 // Route::get('/dosen', [DosenController::class, 'getAllData']);
+Route::get('/pengumuman',function () {
+    return view('announce');
+});
+
+Route::get('/pengumuman', [PengumumanController::class, 'getDataAnnounce']);
+
+Route::get('/pengumuman/edit',function () {
+    return view('edit_ann');
+});
+
+Route::get('/pengumuman/tambah',function () {
+    return view('tambah_ann');
+});
