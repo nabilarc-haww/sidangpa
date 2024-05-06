@@ -16,7 +16,7 @@
             <li class="breadcrumb-item active">Daftar Pengumuman</li>
           </ol>
         </nav>
-      </div><!-- End Page Title -->
+      </div>
 
       <section class="section">
         <div class="row">
