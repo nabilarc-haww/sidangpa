@@ -49,28 +49,35 @@
           <div class="card-body">
               <h5 class="card-title">Mulai Pembuatan Jadwalmu !</h5>
 
-              <!-- <form action="{{ route('header.store') }}" method="POST">
+              <form action="{{ route('header.store') }}" method="POST">
                   @csrf
                   <div class="col-md-12">
                       <label for="" class="form-label">Judul Jadwal</label>
                       <textarea name="judul" style="height: 100px;" type="text" class="form-control" placeholder="Masukkan judulmu"></textarea>
                   </div>
-                  <div class="col-md-12">
-                      <label for="inputState" class="form-label">Program Studi</label>
+                  <div class="col-md-12 mt-2">
+                      <label for="inputState" class="form-label">Tahun Ajaran</label>
                       <select name="prodi" id="inputState" class="form-select" placeholder="Pilihlah program studi">
-                          <option selected disabled>Program Studi</option>
-                          <option>D3 Teknik Informatika</option>
+                          <option selected disabled>Pilih tahun ajaran</option>
+                          <option>Tahun 2023/2024</option>
                       </select>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-12 mt-2">
+                    <label for="inputState" class="form-label">Program Studi</label>
+                    <select name="prodi" id="inputState" class="form-select" placeholder="Pilihlah program studi">
+                        <option selected disabled>Program Studi</option>
+                        <option>D3 Teknik Informatika</option>
+                    </select>
+                </div>
+                  <div class="col-md-6 mt-2">
                       <label for="inputZip" class="form-label">Tanggal</label>
                       <input name="tanggal_waktu" type="date" class="form-control" id="inputZip" placeholder="Pilih tanggal">
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-6 mt-2">
                       <label for="inputZip" class="form-label">Waktu</label>
                       <input type="time" class="form-control" id="inputZip" placeholder="Masukkan waktu">
                   </div>
-                  <div class="col-md-12">
+                  <div class="col-md-12 mt-2">
                       <label for="inputState" class="form-label">Tahapan Sidang</label>
                       <select name="tahapan_sidang" id="inputState" class="form-select" placeholder="Pilihlah tahapan sidang">
                           <option selected disabled>Tahapan Sidang</option>
@@ -89,7 +96,7 @@
                       <button type="submit" class="btn btn-primary">Submit</button>
                       <button type="reset" class="btn btn-secondary">Reset</button>
                   </div>
-              </form> -->
+              </form> 
 
               <form class="row g-3" action="{{ route('proyek-akhir.import') }}" method="post" enctype="multipart/form-data">
                 @csrf

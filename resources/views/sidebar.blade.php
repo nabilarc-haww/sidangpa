@@ -43,7 +43,7 @@
       </li><!-- End Tables Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="index.html">
+        <a class="nav-link collapsed" href="/pengumuman">
           <i class="bi bi-megaphone"></i>
           <span>Pengumuman</span>
         </a>
