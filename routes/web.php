@@ -7,16 +7,7 @@ use App\Http\Controllers\HeaderController;
 use App\Http\Controllers\RisetGroupController;
 use App\Http\Controllers\PengumumanController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -62,10 +53,11 @@ Route::get('/pengumuman',function () {
 });
 
 Route::get('/pengumuman', [PengumumanController::class, 'getDataAnnounce']);
+Route::post('/pengumuman/tambah-pengumuman', [PengumumanController::class, 'tambahPengumuman'])->name('pengumuman.tambahPengumuman');
+Route::get('/pengumuman/edit-pengumuman/{id}', [PengumumanController::class, 'editPengumuman'])->name('pengumuman.editPengumuman');
+Route::post('/pengumuman/update-pengumuman/{id}', [PengumumanController::class, 'updatePengumuman'])->name('pengumuman.updatePengumuman');
+Route::delete('/pengumuman/delete-penguman/{id}', [PengumumanController::class, 'deletePengumuman'])->name('pengumuman.deletePengumuman');
 
-Route::get('/pengumuman/edit',function () {
-    return view('edit_ann');
-});
 
 Route::get('/pengumuman/tambah',function () {
     return view('tambah_ann');
