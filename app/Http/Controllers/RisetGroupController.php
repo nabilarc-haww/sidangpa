@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-class RisetGroupController extends Controller
+class RisetGroupController extends Controller 
 {
     public function getAllData()
     {

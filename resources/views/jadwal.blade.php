@@ -49,7 +49,7 @@
           <div class="card-body">
               <h5 class="card-title">Mulai Pembuatan Jadwalmu !</h5>
 
-              <!-- <form action="{{ route('header.store') }}" method="POST">
+              <form action="{{ route('header.store') }}" method="POST">
                   @csrf
                   <div class="col-md-12">
                       <label for="" class="form-label">Judul Jadwal</label>
@@ -89,7 +89,7 @@
                       <button type="submit" class="btn btn-primary">Submit</button>
                       <button type="reset" class="btn btn-secondary">Reset</button>
                   </div>
-              </form> -->
+              </form>
 
               <form class="row g-3" action="{{ route('proyek-akhir.import') }}" method="post" enctype="multipart/form-data">
                 @csrf
