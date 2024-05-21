@@ -16,7 +16,7 @@ class PengumumanController extends Controller
 
         $pengumuman = $response->json();
 
-        return view('announce', compact('pengumuman'));
+        return view('announce/announce', compact('pengumuman'));
 
     }
 }

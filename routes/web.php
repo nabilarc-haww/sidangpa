@@ -58,15 +58,23 @@ Route::get('/riset-group', [RisetGroupController::class, 'getAllData']);
 
 // Route::get('/dosen', [DosenController::class, 'getAllData']);
 Route::get('/pengumuman',function () {
-    return view('announce');
+    return view('announce/announce');
 });
 
 Route::get('/pengumuman', [PengumumanController::class, 'getDataAnnounce']);
 
 Route::get('/pengumuman/edit',function () {
-    return view('edit_ann');
+    return view('announce/edit_ann');
 });
 
 Route::get('/pengumuman/tambah',function () {
-    return view('tambah_ann');
+    return view('announce/tambah_ann');
+});
+
+Route::get('/pengumuman/public',function () {
+    return view('announce/public');
+});
+
+Route::get('/pengumuman/public/detail',function () {
+    return view('announce/detail_public');
 });
