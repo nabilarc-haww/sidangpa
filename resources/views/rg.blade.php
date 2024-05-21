@@ -37,8 +37,12 @@
               <tbody>
                 @foreach($riset_group as $item)
                 <tr>
-                  <td>{{ $item['riset_group']['riset_group'] }}</td>
-                  <td>{{ $item['nama_dosen'] }}</td>
+                  <td>{{ $item['riset_group'] }}</td>
+                  <td>
+                    @foreach ($item['dosen'] as $dosen)
+                        {{ $dosen['nama_dosen'] }}<br>
+                    @endforeach
+                </td>
                   {{-- <td>{{ $item['ruang']['nama_ruang'] }}</td> --}}
                 </tr>
                 @endforeach

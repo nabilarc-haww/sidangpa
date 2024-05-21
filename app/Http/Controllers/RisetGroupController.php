@@ -12,9 +12,10 @@ class RisetGroupController extends Controller
         // Buat request ke Supabase menggunakan HTTP Client
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-        ])->get($this->supabaseUrl . '/rest/v1/dosen?select=*,riset_group(*),ruang(*)');
+        ])->get($this->supabaseUrl . '/rest/v1/riset_group?select=*,dosen(*),ruang(*)');
 
         $riset_group = $response->json();
+        
 
         return view('rg', compact('riset_group'));
 

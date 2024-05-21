@@ -58,7 +58,6 @@ Route::get('/pengumuman/edit-pengumuman/{id}', [PengumumanController::class, 'ed
 Route::post('/pengumuman/update-pengumuman/{id}', [PengumumanController::class, 'updatePengumuman'])->name('pengumuman.updatePengumuman');
 Route::delete('/pengumuman/delete-penguman/{id}', [PengumumanController::class, 'deletePengumuman'])->name('pengumuman.deletePengumuman');
 
-
 Route::get('/pengumuman/tambah',function () {
     return view('tambah_ann');
 });
