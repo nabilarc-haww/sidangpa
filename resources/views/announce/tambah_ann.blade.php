@@ -22,70 +22,68 @@
       <section class="section">
         <div class="row">
           <div class="col-lg-12">
-    
-            <div class="col-lg-12">
-
                 <div class="card">
-                  <div class="card-body">
+                  <div class="card-body p-5">
 
                     <!-- Vertical Form -->
-                    <form class="row g-3">
-                      <div class="col-12 pt-4">
-                        <label for="inputNanme4" class="form-label">Judul Pengumuman</label>
-                        <input type="text" class="form-control" id="inputNanme4">
-                      </div>
-                      <div class="col-md-12">
-                        <label for="fileUpload" class="form-label">Cover</label>
-                        <input type="file" class="form-control" id="fileUpload" name="fileUpload">
-                      </div>
-                      <div class="col-md-12">
-                        <label for="fileUpload" class="form-label">Lampiran</label>
-                        <input type="file" class="form-control" id="fileUpload" name="fileUpload">
-                      </div>
-                      <div class="col-md-12">
-                        <div class="card-body">
-                          <h5 class="card-title">Quill Editor Default</h5>
-            
-                          <!-- Quill Editor Default -->
-                          <div class="quill-editor-default" type="text" style="">
-                          </div>
-                          <!-- End Quill Editor Default -->
-            
+                    <form method="POST" action="{{ route('pengumuman.tambahPengumuman') }}">
+                      @csrf
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label for="judul_pengumuman" class="form-label">Judul Pengumuman</label>
+                          <input type="text" class="form-control" id="judul_pengumuman" name="judul_pengumuman">
+                        </div>
+                        <!-- Tambah input untuk file cover -->
+                        <div class="col-md-6">
+                          <label for="cover" class="form-label">Cover</label>
+                          <input type="file" class="form-control" id="cover" name="cover">
                         </div>
                       </div>
-                      <div class="col-md-12">
-                        <label class="col-form-label pt-0">Status</label>
-                        <div class="row ms-4">
-                          <div class="form-check col-2">
-                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
-                            <label class="form-check-label" for="gridRadios1">
-                              Unpublish
-                            </label>
-                          </div>
-                          <div class="form-check col-2">
-                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
-                            <label class="form-check-label" for="gridRadios2">
-                              Publish
-                            </label>
-                          </div>
-                          <div class="form-check col-2">
-                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
-                            <label class="form-check-label" for="gridRadios2">
-                              Draft
-                            </label>
+                      <div class="row">
+                        <!-- Tambah input untuk file lampiran -->
+                        <div class="col-md-6">
+                          <label for="lampiran" class="form-label">Lampiran</label>
+                          <input type="file" class="form-control" id="lampiran" name="lampiran">
+                        </div>
+                        <div class="col-md-6">
+                          <label for="deskripsi" class="form-label">Deskripsi</label>
+                          <textarea class="form-control" id="deskripsi" name="deskripsi"></textarea>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <label class="col-form-label pt-0">Status</label>
+                          <div class="row ms-4">
+                            <!-- Tambah input untuk status -->
+                            <div class="form-check col-2">
+                              <input class="form-check-input" type="radio" name="status" id="unpublish" value="unpublish" checked>
+                              <label class="form-check-label" for="unpublish">
+                                Unpublish
+                              </label>
+                            </div>
+                            <div class="form-check col-2">
+                              <input class="form-check-input" type="radio" name="status" id="publish" value="publish">
+                              <label class="form-check-label" for="publish">
+                                Publish
+                              </label>
+                            </div>
+                            <div class="form-check col-2">
+                              <input class="form-check-input" type="radio" name="status" id="draft" value="draft">
+                              <label class="form-check-label" for="draft">
+                                Draft
+                              </label>
+                            </div>
                           </div>
                         </div>
-                    </div>
-                      <div class="col-md-12 d-flex justify-content-end align-items-end">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                        <button type="reset" class="btn btn-secondary">Reset</button>
+                      </div>
+                      <div class="col-md-12 d-flex justify-content-end align-items-end pt-5">
+                        <button type="reset" class="btn btn-secondary" style="margin-right: 20px;">Reset</button>
+                        <button type="submit" class=" btn btn-primary">Submit</button>
                       </div>
                     </form><!-- Vertical Form -->
       
                   </div>
                 </div>
-      
-              </div>
 
           </div>
         </div>

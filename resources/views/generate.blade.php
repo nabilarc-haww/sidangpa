@@ -18,43 +18,55 @@
   </div><!-- End Page Title -->
 
   <section class="section">
-    <div class="row">
+    <div class="row justify-content-center">
       <div class="col-lg-12">
 
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Data Proyek Akhir</h5>
-            <p>Anda dapat melihat data proyek disini diantaranya judul proyek akhir, mahasiswa dan dosen pembimbingnya.</p>
+            <!-- <p>Anda dapat melihat data proyek disini diantaranya judul proyek akhir, mahasiswa dan dosen pembimbingnya.</p> -->
 
-            <!-- Form untuk filter data -->
-            <form action="{{ route('proyek-akhir.getData') }}" method="GET">
-              @csrf
-            <!-- End Form -->
-
+            
+            @foreach($finalResult as $header)
+            <h2 class="text-center">{{ $header['judul'] }}</h2>
+            <p class="text-center">Prodi: {{ $header['prodi'] }}</p>
+            <p class="text-center">Tanggal: {{ $header['tanggal'] }} </p>
+            <p class="text-center">Jam: {{ $header['waktu'] }} - Selesai </p>
+            <p class="text-center">Tahapan Sidang: {{ $header['tahapan_sidang'] }}</p>
+            
+            @foreach($header['data_generate'] as $ruang)
+            <h5>{{ $ruang['nama_ruang'] }} ({{ $ruang['kode_ruang'] }} - {{ $ruang['letak'] }})</h5>
             <!-- Table untuk menampilkan data -->
-            <table class="table datatable">
-              <thead>
+            <table class="table table-bordered">
+              <thead  class="table-light">
                 <tr>
                   <th>Nama Mahasiswa</th>
                   <th>Judul</th>
                   <th>Pembimbing 1</th>
                   <th>Pembimbing 2</th>
                   <th>Pembimbing 3</th>
+                  <th>Penguji 1</th>
+                  <th>Penguji 2</th>
                 </tr>
               </thead>
               <tbody>
-                @foreach($proyek_akhir as $item)
+                @foreach($ruang['data_generate'] as $data)
                 <tr>
-                  <td>{{ $item['nama_mahasiswa'] }}</td>
-                  <td>{{ $item['judul_pa'] }}</td>
-                  <td>{{ $item['dosen_pembimbing1'] }}</td>
-                  <td>{{ $item['dosen_pembimbing2'] }}</td>
-                  <td>{{ $item['dosen_pembimbing3'] }}</td>
+                  <td>{{ $data['id_mhs']['nama_mahasiswa'] }}</td>
+                  <td>{{ $data['id_mhs']['judul_pa'] }}</td>
+                  <td>{{ $data['id_mhs']['dosen_pembimbing1']['nama_dosen'] }}</td>
+                  <td>{{ $data['id_mhs']['dosen_pembimbing2']['nama_dosen'] }}</td>
+                  <td>{{ $data['id_mhs']['dosen_pembimbing3']['nama_dosen'] }}</td>
+                  <td>{{ $data['penguji_1']['nama_dosen'] }}</td>
+                  <td>{{ $data['penguji_2']['nama_dosen'] }}</td>
                 </tr>
                 @endforeach
               </tbody>
             </table>
             <!-- End Table -->
+            @endforeach
+            
+            @endforeach
 
           </div>
         </div>

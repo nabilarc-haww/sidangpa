@@ -5,6 +5,34 @@
     @include('sidebar')
 
 <main id="main" class="main">
+  
+<!-- Alerts -->
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+
 <div class="row">
     <div class="col-lg-6">
         <div class="card p-5">
@@ -69,14 +97,16 @@
                         <option>D3 Teknik Informatika</option>
                     </select>
                 </div>
-                  <div class="col-md-6 mt-2">
-                      <label for="inputZip" class="form-label">Tanggal</label>
-                      <input name="tanggal_waktu" type="date" class="form-control" id="inputZip" placeholder="Pilih tanggal">
-                  </div>
-                  <div class="col-md-6 mt-2">
-                      <label for="inputZip" class="form-label">Waktu</label>
-                      <input type="time" class="form-control" id="inputZip" placeholder="Masukkan waktu">
-                  </div>
+                <div class="row">
+                    <div class="col-md-6 mt-2">
+                        <label for="inputZip" class="form-label">Tanggal</label>
+                        <input name="tanggal" type="date" class="form-control" id="inputZip" placeholder="Pilih tanggal">
+                    </div>
+                    <div class="col-md-6 mt-2">
+                        <label for="inputZip" class="form-label">Waktu</label>
+                        <input type="time" name="waktu" class="form-control" id="inputZip" placeholder="Masukkan waktu">
+                    </div>
+                 </div>
                   <div class="col-md-12 mt-2">
                       <label for="inputState" class="form-label">Tahapan Sidang</label>
                       <select name="tahapan_sidang" id="inputState" class="form-select" placeholder="Pilihlah tahapan sidang">
@@ -96,20 +126,59 @@
                       <button type="submit" class="btn btn-primary">Submit</button>
                       <button type="reset" class="btn btn-secondary">Reset</button>
                   </div>
-              </form> 
-
-              <form class="row g-3" action="{{ route('proyek-akhir.import') }}" method="post" enctype="multipart/form-data">
-                @csrf
-                <div class="col-md-12">
-                    <label for="fileUpload" class="form-label">Upload File</label>
-                    <input type="file" class="form-control" id="fileUpload" name="fileUpload">
-                </div>
-                <button type="submit" class="btn btn-primary">Import</button>
-                </form>
+              </form>
           </div>
       </div>
   </div>
 </div>
+
+<!-- @if (session('id_header')) -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">import data proyek akhir</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3" action="{{ route('proyek-akhir.import') }}" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <!-- <input type="hidden" name="id_header" value="{{ session('id_header') }}"> -->
+
+                        <div class="col-md-12">
+                            <label for="fileUpload" class="form-label">Upload File</label>
+                            <input type="file" class="form-control" id="fileUpload" name="fileUpload">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Import</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @else -->
+        <!-- <div class="alert alert-danger">
+            Missing required parameter: id_header.
+        </div>
+    @endif -->
+
+
+<!-- Include Bootstrap JS and jQuery if not already included -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        @if(session('success'))
+            var myModal = new bootstrap.Modal(document.getElementById('uploadModal'), {
+                keyboard: false
+            });
+            myModal.show();
+        @elseif(session('error'))
+            // Display error alert
+            alert("{{ session('error') }}");
+        @endif
+    });
+</script>
 </main>
 
 </body>

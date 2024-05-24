@@ -49,11 +49,9 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                  {{-- <th>No</th>
-                                  <th>Cover</th> --}}
                                   <th>Judul Pengumuman</th>
                                   <th>Deskripsi</th>
-                                  {{-- <th>Dokumen</th> --}}
+                                  <th>Status</th>
                                   <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -62,13 +60,18 @@
                                 <tr>
                                   <td>{{ $item['judul_pengumuman'] }}</td>
                                   <td>{{ $item['deskripsi'] }}</td>
+                                  <td>{{ $item['status'] }}</td>
                                   <td>
-                                    <a type="button" href="/pengumuman/edit" class="btn btn-primary btn-sm">
-                                      Edit
-                                    </a>
-                                    <a type="button" href="/pengumuman/edit" class="btn btn-danger btn-sm">
-                                      Hapus
-                                    </a>
+                                    <div class="d-flex">
+                                      <a href="{{ route('pengumuman.editPengumuman', $item['id_pengumuman']) }}" class="btn btn-primary btn-sm me-2">
+                                          Edit
+                                      </a>
+                                      <form action="{{ route('pengumuman.deletePengumuman', $item['id_pengumuman']) }}" method="post">
+                                          @csrf
+                                          @method('DELETE')
+                                          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus pengumuman ini?')">Hapus</button>
+                                      </form>
+                                    </div>
                                   </td>
                                 </tr>
                                 @endforeach

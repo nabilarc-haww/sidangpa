@@ -7,21 +7,6 @@ use App\Http\Controllers\HeaderController;
 use App\Http\Controllers\RisetGroupController;
 use App\Http\Controllers\PengumumanController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
@@ -41,9 +26,9 @@ Route::get('/',function () {
 // Route::get('/proyek-akhir/jadwal',function () {
 //     return view('jadwal');
 // });
-Route::get('/proyek-akhir/generate', [ProyekAkhirController::class, 'getData'])->name('proyek-akhir.getData');
+Route::get('/proyek-akhir/generate/{id_header}', [ProyekAkhirController::class, 'generate'])->name('proyek-akhir.generate');
+Route::get('/proyek-akhir/generate-hasil/{id_header}', [ProyekAkhirController::class, 'getData'])->name('proyek-akhir.getdata');
 Route::post('/store-header', [HeaderController::class, 'store'])->name('header.store');
-
 Route::post('/proyek-akhir/import', [ProyekAkhirController::class, 'import'])->name('proyek-akhir.import');
 
 // Route::get('/proyek-akhir/jadwal', function () {
@@ -66,6 +51,10 @@ Route::get('/pengumuman', [PengumumanController::class, 'getDataAnnounce']);
 Route::get('/pengumuman/edit',function () {
     return view('announce/edit_ann');
 });
+Route::post('/pengumuman/tambah-pengumuman', [PengumumanController::class, 'tambahPengumuman'])->name('pengumuman.tambahPengumuman');
+Route::get('/pengumuman/edit-pengumuman/{id}', [PengumumanController::class, 'editPengumuman'])->name('pengumuman.editPengumuman');
+Route::post('/pengumuman/update-pengumuman/{id}', [PengumumanController::class, 'updatePengumuman'])->name('pengumuman.updatePengumuman');
+Route::delete('/pengumuman/delete-penguman/{id}', [PengumumanController::class, 'deletePengumuman'])->name('pengumuman.deletePengumuman');
 
 Route::get('/pengumuman/tambah',function () {
     return view('announce/tambah_ann');
