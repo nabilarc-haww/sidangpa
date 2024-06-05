@@ -11,7 +11,7 @@
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="/proyek-akhir/generate">
+        <a class="nav-link collapsed" href="/proyek-akhir">
           <i class="bi bi-kanban"></i>
           <span>Proyek Akhir</span>
         </a>
@@ -35,7 +35,7 @@
             </a>
           </li>
           <li>
-            <a href="/proyek-akhir/generate">
+            <a href="/hasil-proyek-akhir/">
               <i class="bi bi-circle"></i><span>Hasil Penjadwalan</span>
             </a>
           </li>

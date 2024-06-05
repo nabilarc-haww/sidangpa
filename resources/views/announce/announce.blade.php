@@ -33,7 +33,7 @@
 
                 <div class="row">
                   <div class="col-md-6"></div>
-                  <div class="col-md-6 pb-3" style="padding-left: 300px">
+                  <div class="col-md-6 pb-3" style="padding-left: 350px">
                     <a type="button" href="/pengumuman/tambah" class="btn btn-success" style="background-color: #04BC00;" >
                       + Tambah Pengumuman
                     </a>

@@ -50,7 +50,7 @@ class PengumumanController extends Controller
 
         // dd($pengumuman);
         // Mengirim data pengumuman ke view edit_ann
-        return view('edit_ann', compact('pengumuman'));
+        return view('announce/edit_ann', compact('pengumuman'));
     }
 
     public function updatePengumuman(Request $request, $id)

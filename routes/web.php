@@ -6,6 +6,8 @@ use App\Http\Controllers\ProyekAkhirController;
 use App\Http\Controllers\HeaderController;
 use App\Http\Controllers\RisetGroupController;
 use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\DataProyekAkhirController;
+use App\Http\Controllers\AuthController;
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
@@ -39,6 +41,10 @@ Route::get('/proyek-akhir/jadwal',function () {
     return view('jadwal');
 });
 
+Route::get('/hasil-proyek-akhir',function () {
+    return view('card');
+});
+
 Route::get('/riset-group', [RisetGroupController::class, 'getAllData']);
 
 // Route::get('/dosen', [DosenController::class, 'getAllData']);
@@ -67,3 +73,52 @@ Route::get('/pengumuman/public',function () {
 Route::get('/pengumuman/public/detail',function () {
     return view('announce/detail_public');
 });
+
+
+// Route::get('/proyek-akhir/data',function () {
+//     return view('/proyek_akhir/public_pa');
+// });
+Route::get('/proyek-akhir/data', [DataProyekAkhirController::class, 'getDataProyek']);
+Route::post('/proyek-akhir/data/tambah', [DataProyekAkhirController::class, 'tambahDataProyek'])->name('proyek-akhir.data.tambahDataProyek');
+Route::get('/proyek-akhir/data/edit/{id}', [DataProyekAkhirController::class, 'editDataProyek'])->name('proyek-akhir.data.editDataProyek');
+Route::post('/proyek-akhir/data/update/{id}', [DataProyekAkhirController::class, 'updateDataProyek'])->name('proyek-akhir.data.updateDataProyek');
+Route::delete('/proyek-akhir/data/delete/{id}', [DataProyekAkhirController::class, 'deleteDataProyek'])->name('proyek-akhir.data.deleteDataProyek');
+Route::get('/proyek-akhir/data/tambah_pa', [DataProyekAkhirController::class, 'dosenDropdown'])->name('proyek-akhir.data.tambah_pa');
+
+Route::get('/proyek-akhir',function () {
+    return view('proyek_akhir/card_pa');
+});
+
+Route::get('/proyek-akhir/form', [DataProyekAkhirController::class, 'showForm']);
+
+Route::get('/register',function () {
+    return view('user/register');
+});
+
+Route::get('/login',function () {
+    return view('user/login');
+});
+
+// Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+// Route::post('/register', [AuthController::class, 'register']);
+// Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+// Route::post('/login', [AuthController::class, 'login']);
+// Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Route::middleware(['auth.check', 'role:admin'])->group(function () {
+//     Route::get('/', function () {
+//         return view('home');
+//     });
+// });
+
+// Route::get('register', [AuthController::class, 'showRegisterForm'])->name('register');
+// Route::post('register', [AuthController::class, 'register']);
+
+// Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
+// Route::post('login', [AuthController::class, 'login']);
+
+// Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+// Route::get('dashboard', function () {
+//     return view('dashboard');
+// })->middleware('auth:supabase');
