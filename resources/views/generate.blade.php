@@ -57,8 +57,8 @@
                   <td>{{ $data['id_mhs']['dosen_pembimbing1']['nama_dosen'] }}</td>
                   <td>{{ $data['id_mhs']['dosen_pembimbing2']['nama_dosen'] }}</td>
                   <td>{{ $data['id_mhs']['dosen_pembimbing3']['nama_dosen'] }}</td>
-                  <td>{{ $data['penguji_1']['nama_dosen'] }}</td>
-                  <td>{{ $data['penguji_2']['nama_dosen'] }}</td>
+                  <td>{{ $data['penguji_1']['nama_dosen'] ?? "kosong"}} </td>
+                  <td>{{ $data['penguji_2']['nama_dosen'] ?? "kosong" }} </td>
                 </tr>
                 @endforeach
               </tbody>

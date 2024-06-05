@@ -9,85 +9,18 @@ use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str; 
 
 
 class ProyekAkhirController extends Controller
 {
-    // public function getData()
-    // {
-    //     // Buat request ke Supabase menggunakan HTTP Client
-    //     $response = Http::withHeaders([
-    //         'apikey' => $this->supabaseApiKey,
-    //     ])->get($this->supabaseUrl . '/rest/v1/proyek_akhir');
-
-    //     $proyek_akhir = $response->json();
-    //     // dd($proyek_akhir);
-
-    //     return view('generate', compact('proyek_akhir'));
-    // }
-
-    // public function getData()
-    // {
-    //     // Fetch data from the provided URLs with API key in headers
-    //     $risetGroupsResponse = Http::withHeaders([
-    //         'apikey' => $this->supabaseApiKey,
-    //     ])->get('https://ihpqktbogxquohofeevj.supabase.co/rest/v1/riset_group?select=*,dosen(*),ruang(*)');
-    
-    //     $mahasiswaResponse = Http::withHeaders([
-    //         'apikey' => $this->supabaseApiKey,
-    //     ])->get('https://ihpqktbogxquohofeevj.supabase.co/rest/v1/proyek_akhir_mhs?select=*');
-    
-    //     // Check if the data retrieval was successful
-    //     if ($risetGroupsResponse->failed() || $mahasiswaResponse->failed()) {
-    //         return response()->json(['error' => 'Failed to retrieve data from API'], 500);
-    //     }
-    
-    //     // Get the JSON response from the API calls
-    //     $risetGroups = $risetGroupsResponse->json();
-    //     $mahasiswaData = $mahasiswaResponse->json();
-    
-    //     // Initialize combinedData array
-    //     $combinedData = [];
-    
-    //     // Loop through each proyek_akhir_mhs entry
-    //     foreach ($mahasiswaData as $mahasiswa) {
-    //         // Find the corresponding riset_group based on dosen_pembimbing1
-    //         foreach ($risetGroups as $risetGroup) {
-    //             foreach ($risetGroup['dosen'] as $dosen) {
-    //                 if ($dosen['id_dosen'] === $mahasiswa['dosen_pembimbing1']) {
-    //                     // Combine data and add to combinedData array
-    //                     $combinedData[] = [
-    //                         'mahasiswa' => $mahasiswa,
-    //                         'riset_group' => $risetGroup,
-    //                     ];
-    //                     break 2; // Break both inner loops
-    //                 }
-    //             }
-    //         }
-    //     }
-    
-    //     // Return the combined data
-    //     return response()->json($combinedData);
-    // }
-
-
+   
     public function getData($id_header)
     {
-        // $id_header = session('id_header');
-        // $id_header = $request->query('id_header', session('id_header'));
-
-        // if (!$id_header) {
-        //     return redirect()->back()->with('error', 'ID Header is missing.');
-        // }
-
-        // Fetch data from the API
-        // $response = Http::withHeaders([
-        //     'apikey' => $this->supabaseApiKey,
-        // ])->get($this->supabaseUrl . '/rest/v1/header?id_header=eq.{$id_header}&select=*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*),penguji_1(*),penguji_2(*))');
-        
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-            'Authorization' => 'Bearer ' . $this->supabaseApiKey,  // Tambahkan header Authorization jika diperlukan
+            'Authorization' => 'Bearer ' . $this->supabaseApiKey,  
+            // Tambahkan header Authorization jika diperlukan
         ])->get($this->supabaseUrl . '/rest/v1/header', [
             'id_header' => 'eq.' . $id_header,
             'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*),penguji_1(*),penguji_2(*))'
@@ -145,18 +78,18 @@ class ProyekAkhirController extends Controller
         // Return view with the grouped data
         // return view('generate', compact('groupedData'));
     }
-    
+
     public function import(Request $request)
     {
         $request->validate([
             'fileUpload' => 'required|mimes:csv,txt' // Allowing txt for better compatibility
         ]);
-
+    
         $file = $request->file('fileUpload');
         $filePath = $file->getRealPath();
-
+    
         $data = array_map('str_getcsv', file($filePath));
-
+    
         $importData = [];
         foreach ($data as $key => $row) {
             if ($key === 0) {
@@ -164,6 +97,7 @@ class ProyekAkhirController extends Controller
             }
             if (count($row) >= 6) {
                 $importData[] = [
+                    'id_mhs' => (string) Str::uuid(), // Generate UUID for id_mhs
                     'nrp_mahasiswa' => $row[0],
                     'nama_mahasiswa' => $row[1],
                     'judul_pa' => $row[2],
@@ -173,30 +107,29 @@ class ProyekAkhirController extends Controller
                 ];
             }
         }
-
+    
         try {
             $response = Http::withHeaders([
                 'apikey' => $this->supabaseApiKey,
                 'Content-Type' => 'application/json',
             ])->post($this->supabaseUrl . '/rest/v1/proyek_akhir_mhs', $importData);
-
+    
             if ($response->successful()) {
                 $id_header = session('id_header');
-
+    
                 if ($id_header) {
-                    return redirect()->route('proyek-akhir.generate', ['id_header' => $id_header])
+                    return $this->generate($id_header, $importData)
                             ->with('success', 'Data header berhasil disimpan.');
                 } else {
                     return redirect('/proyek-akhir/jadwal')->with('error', 'Gagal mengimpor data: id_header tidak ditemukan.');
                 }
-                // return redirect('/proyek-akhir/generate')->with('success', 'Data berhasil diimpor.');
             } else {
                 $error = $response->json();
                 Log::error('Supabase import error', [
                     'status' => $response->status(),
                     'body' => $error,
                 ]);
-
+    
                 return redirect('/proyek-akhir/jadwal')->with('error', 'Gagal mengimpor data: ' . json_encode($error));
             }
         } catch (\Exception $e) {
@@ -204,40 +137,37 @@ class ProyekAkhirController extends Controller
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-
+    
             return redirect('/proyek-akhir/jadwal')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
-
-    public function generate($id_header)
+    
+    public function generate($id_header, $importData)
     {
-        
         // Fetch data from the provided URLs with API key in headers
         $risetGroupsResponse = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
         ])->get('https://ihpqktbogxquohofeevj.supabase.co/rest/v1/riset_group?select=*,dosen(*),ruang(*)');
-
-        $mahasiswaResponse = Http::withHeaders([
-            'apikey' => $this->supabaseApiKey,
-        ])->get('https://ihpqktbogxquohofeevj.supabase.co/rest/v1/proyek_akhir_mhs?select=*');
-
+    
+        // Use importData instead of fetching mahasiswaResponse from API
+        $mahasiswaData = $importData;
+    
         $headerResponse = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
         ])->get("https://ihpqktbogxquohofeevj.supabase.co/rest/v1/header?id_header=eq.{$id_header}");
-
+    
         // Check if the data retrieval was successful
-        if ($risetGroupsResponse->failed() || $mahasiswaResponse->failed() || $headerResponse->failed()) {
+        if ($risetGroupsResponse->failed() || $headerResponse->failed()) {
             return response()->json(['error' => 'Failed to retrieve data from API'], 500);
         }
-
+    
         // Get the JSON response from the API calls
         $risetGroups = $risetGroupsResponse->json();
-        $mahasiswaData = $mahasiswaResponse->json();
         $headerData = $headerResponse->json();
-
+    
         // Initialize combinedData array grouped by riset_group
         $groupedData = [];
-
+    
         // Create a mapping of dosen id to dosen name for quick lookup
         $dosenMap = [];
         foreach ($risetGroups as $risetGroup) {
@@ -245,7 +175,7 @@ class ProyekAkhirController extends Controller
                 $dosenMap[$dosen['id_dosen']] = $dosen['nama_dosen'];
             }
         }
-
+    
         // Loop through each proyek_akhir_mhs entry
         foreach ($mahasiswaData as $mahasiswa) {
             // Find the corresponding riset_group based on dosen_pembimbing1
@@ -260,7 +190,7 @@ class ProyekAkhirController extends Controller
                                 'mahasiswa' => [],
                             ];
                         }
-
+    
                         // Add the mahasiswa to the corresponding riset_group entry
                         $groupedData[$risetGroup['id_rg']]['mahasiswa'][] = $mahasiswa;
                         break 2; // Break both inner loops
@@ -268,29 +198,29 @@ class ProyekAkhirController extends Controller
                 }
             }
         }
-
+    
         // Assign examiners to each mahasiswa
         foreach ($groupedData as &$group) {
             $dosenList = $group['riset_group']['dosen'];
-
+    
             foreach ($group['mahasiswa'] as &$mahasiswa) {
                 $dosenPembimbing1 = $mahasiswa['dosen_pembimbing1'];
                 $dosenPembimbing2 = $mahasiswa['dosen_pembimbing2'] ?? null;
                 $dosenPembimbing3 = $mahasiswa['dosen_pembimbing3'] ?? null;
-
+    
                 // Add names for pembimbing
                 $mahasiswa['nama_dosen_pembimbing1'] = $dosenMap[$dosenPembimbing1] ?? null;
                 $mahasiswa['nama_dosen_pembimbing2'] = $dosenMap[$dosenPembimbing2] ?? null;
                 $mahasiswa['nama_dosen_pembimbing3'] = $dosenMap[$dosenPembimbing3] ?? null;
-
+    
                 $availableDosen = array_filter($dosenList, function($dosen) use ($dosenPembimbing1, $dosenPembimbing2, $dosenPembimbing3) {
                     return $dosen['id_dosen'] !== $dosenPembimbing1
                         && $dosen['id_dosen'] !== $dosenPembimbing2
                         && $dosen['id_dosen'] !== $dosenPembimbing3;
                 });
-
+    
                 $availableDosen = array_values($availableDosen); // Re-index the array
-
+    
                 if (count($availableDosen) >= 2) {
                     $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
                     $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
@@ -309,11 +239,11 @@ class ProyekAkhirController extends Controller
                 }
             }
         }
-
+    
         // Group mahasiswa by their penguji (examiners)
         foreach ($groupedData as &$group) {
             $mahasiswaGroups = [];
-
+    
             // Create groups based on penguji1 and penguji2
             foreach ($group['mahasiswa'] as $mahasiswa) {
                 $key = $mahasiswa['penguji1'] . '-' . $mahasiswa['penguji2'];
@@ -322,13 +252,13 @@ class ProyekAkhirController extends Controller
                 }
                 $mahasiswaGroups[$key][] = $mahasiswa;
             }
-
+    
             // Distribute mahasiswa groups into available rooms
             $rooms = $group['riset_group']['ruang'];
             $roomCount = count($rooms);
             $groupKeys = array_keys($mahasiswaGroups);
             $groupCount = count($groupKeys);
-
+    
             // Ensure we have at least one room for each group, or groups will be split across available rooms
             if ($roomCount > 0) {
                 for ($i = 0; $i < $groupCount; $i++) {
@@ -339,7 +269,7 @@ class ProyekAkhirController extends Controller
                     $rooms[$roomIndex]['mahasiswa'] = array_merge($rooms[$roomIndex]['mahasiswa'], $mahasiswaGroups[$groupKeys[$i]]);
                 }
             }
-
+    
             // Assign updated rooms back to the riset_group
             $group['riset_group']['ruang'] = $rooms;
         }
@@ -359,32 +289,31 @@ class ProyekAkhirController extends Controller
                 }
             }
         }
-
+    
         // Send the response data to the database
         $postResponse = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
         ])->post($this->supabaseUrl . '/rest/v1/data_generate', $response);
-
+    
         // Check if the post request was successful
         if ($postResponse->failed()) {
             return response()->json(['error' => 'Failed to send data to the database'], 500);
         }
-
-        // return view('proyek-akhir.generate', [
-        //     'groupedData' => $groupedData,
-        //     'headerData' => $headerData
-        // ]);
-
-        // return redirect('/proyek-akhir/generate')->with('success', 'Data header berhasil disimpan.');
-
+    
         session(['id_header' => $id_header]);
         return redirect('/proyek-akhir/generate-hasil/'.$id_header)->with('success', 'Data header berhasil disimpan.');
-
-        // return redirect()->route('proyek-akhir.getData', ['id_header' => $id_header])
-        //                     ->with('success', 'Data header berhasil disimpan.');
-
-        // // Return the new response array
-        // return response()->json($response);
     }
+    
+    public function getDataGenerate()
+    {
+
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/header?select=*&order=created_at.desc');
+        
+        $headers = $response->json();
+        return view('card', compact('headers'));
+    }
+
     
 }

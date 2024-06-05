@@ -32,18 +32,22 @@ Route::get('/proyek-akhir/generate/{id_header}', [ProyekAkhirController::class, 
 Route::get('/proyek-akhir/generate-hasil/{id_header}', [ProyekAkhirController::class, 'getData'])->name('proyek-akhir.getdata');
 Route::post('/store-header', [HeaderController::class, 'store'])->name('header.store');
 Route::post('/proyek-akhir/import', [ProyekAkhirController::class, 'import'])->name('proyek-akhir.import');
+Route::get('/hasil-proyek-akhir',[ProyekAkhirController::class, 'getDataGenerate']);
 
 // Route::get('/proyek-akhir/jadwal', function () {
 //     return view('/proyek-akhir/generate');
 // });
+Route::get('/proyek-akhir',function () {
+    return view('proyek_akhir/card_pa');
+});
 
 Route::get('/proyek-akhir/jadwal',function () {
     return view('jadwal');
 });
 
-Route::get('/hasil-proyek-akhir',function () {
-    return view('card');
-});
+// Route::get('/hasil-proyek-akhir',function () {
+//     return view('card');
+// });
 
 Route::get('/riset-group', [RisetGroupController::class, 'getAllData']);
 
@@ -84,10 +88,6 @@ Route::get('/proyek-akhir/data/edit/{id}', [DataProyekAkhirController::class, 'e
 Route::post('/proyek-akhir/data/update/{id}', [DataProyekAkhirController::class, 'updateDataProyek'])->name('proyek-akhir.data.updateDataProyek');
 Route::delete('/proyek-akhir/data/delete/{id}', [DataProyekAkhirController::class, 'deleteDataProyek'])->name('proyek-akhir.data.deleteDataProyek');
 Route::get('/proyek-akhir/data/tambah_pa', [DataProyekAkhirController::class, 'dosenDropdown'])->name('proyek-akhir.data.tambah_pa');
-
-Route::get('/proyek-akhir',function () {
-    return view('proyek_akhir/card_pa');
-});
 
 Route::get('/proyek-akhir/form', [DataProyekAkhirController::class, 'showForm']);
 

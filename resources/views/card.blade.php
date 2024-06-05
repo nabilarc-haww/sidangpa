@@ -1,6 +1,4 @@
-<html>
 @extends('main')
-
 <body>
 @include('header')
 @include('sidebar')
@@ -19,156 +17,48 @@
   </div><!-- End Page Title -->
 
   <section class="section">
+    <div class="container">
+      <div class="row g-2">
+        @foreach($headers as $header)
+        <div class="col-6">
+          <div class="card card-body">
+            <small class="text-muted mt-3" style="font-size: 12px">
+            <i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($header['created_at'])->locale('id')->isoFormat('DD MMMM YYYY') }}
+            </small>
+            <h4 class="card-title m-0 py-3">{{ $header['judul'] }}</h4>
+            <div class="row mb-2">
+              <div class="col-4">
+                <strong>Jurusan</strong>
+              </div>
+              <div class="col-8">
+                : {{ $header['prodi'] }}
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-4">
+                <strong>Tahapan</strong>
+              </div>
+              <div class="col-8">
+                : {{ $header['tahapan_sidang'] }}
+              </div>
+            </div>
 
-        <div class="container">
-            <div class="row g-2">
-              <div class="col-6">
-                <div class="card card-body">
-                    <small class="text-muted mt-3" style="font-size: 12px">
-                        <i class="bi bi-clock"></i> Senin, 23 Juni 2024
-                    </small>
-                    <h4 class="card-title m-0 py-3">Jadwal Sidang Proposal</h5>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahun Ajaran</strong>
-                      </div>
-                      <div class="col-8">
-                        : 2023 / 2024
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Jurusan</strong>
-                      </div>
-                      <div class="col-8">
-                        : D3 Teknik Informatika
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahapan</strong>
-                      </div>
-                      <div class="col-8">
-                        : Jadwal Sidang Proposal Proyek Akhir (SPPA)
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-end mt-2">
-                      <button class="btn btn-success me-2"  style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
-                      <button class="btn btn-primary" style="font-size: 14px;">Lihat Hasil</button>
-                    </div>
-                  </div>     
+            <div class="row mb-2">
+              <div class="col-4">
+                <strong>Waktu</strong>
               </div>
-              <div class="col-6">
-                <div class="card card-body">
-                    <small class="text-muted mt-3" style="font-size: 12px">
-                        <i class="bi bi-clock"></i> Senin, 23 Juni 2024
-                    </small>
-                    <h4 class="card-title m-0 py-3">Jadwal Sidang Proposal</h5>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahun Ajaran</strong>
-                      </div>
-                      <div class="col-8">
-                        : 2023 / 2024
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Jurusan</strong>
-                      </div>
-                      <div class="col-8">
-                        : D3 Teknik Informatika
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahapan</strong>
-                      </div>
-                      <div class="col-8">
-                        : Jadwal Sidang Proposal Proyek Akhir (SPPA)
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-end mt-2">
-                      <button class="btn btn-success me-2"  style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
-                      <button class="btn btn-primary" style="font-size: 14px;">Lihat Hasil</button>
-                    </div>
-                  </div>     
+              <div class="col-8">
+                : {{ \Carbon\Carbon::parse($header['tanggal'])->locale('id')->isoFormat('DD MMMM YYYY') }} | {{ $header['waktu']}} WIB
               </div>
-              <div class="col-6">
-                <div class="card card-body">
-                    <small class="text-muted mt-3" style="font-size: 12px">
-                        <i class="bi bi-clock"></i> Senin, 23 Juni 2024
-                    </small>
-                    <h4 class="card-title m-0 py-3">Jadwal Sidang Proposal</h5>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahun Ajaran</strong>
-                      </div>
-                      <div class="col-8">
-                        : 2023 / 2024
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Jurusan</strong>
-                      </div>
-                      <div class="col-8">
-                        : D3 Teknik Informatika
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahapan</strong>
-                      </div>
-                      <div class="col-8">
-                        : Jadwal Sidang Proposal Proyek Akhir (SPPA)
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-end mt-2">
-                      <button class="btn btn-success me-2"  style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
-                      <button class="btn btn-primary" style="font-size: 14px;">Lihat Hasil</button>
-                    </div>
-                  </div>     
-              </div>
-              <div class="col-6">
-                <div class="card card-body">
-                    <small class="text-muted mt-3" style="font-size: 12px">
-                        <i class="bi bi-clock"></i> Senin, 23 Juni 2024
-                    </small>
-                    <h4 class="card-title m-0 py-3">Jadwal Sidang Proposal</h5>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahun Ajaran</strong>
-                      </div>
-                      <div class="col-8">
-                        : 2023 / 2024
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Jurusan</strong>
-                      </div>
-                      <div class="col-8">
-                        : D3 Teknik Informatika
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahapan</strong>
-                      </div>
-                      <div class="col-8">
-                        : Jadwal Sidang Proposal Proyek Akhir (SPPA)
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-end mt-2">
-                      <button class="btn btn-success me-2"  style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
-                      <button class="btn btn-primary" style="font-size: 14px;">Lihat Hasil</button>
-                    </div>
-                  </div>     
-              </div>
-            </div>                
-          </div>
-
+            </div>
+            <div class="d-flex justify-content-end mt-2">
+              <button class="btn btn-success me-2"  style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
+              <a href="{{ url('/proyek-akhir/generate-hasil/'.$header['id_header'])  }}" class="btn btn-primary" style="font-size: 14px;">Lihat Hasil</a>
+            </div>
+          </div>     
+        </div>
+        @endforeach
+      </div>                
     </div>
   </section>
 
@@ -177,7 +67,6 @@
 @include('footer')
 
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
 </body>
 
 </html>

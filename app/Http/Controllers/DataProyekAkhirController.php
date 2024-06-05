@@ -24,7 +24,8 @@ class DataProyekAkhirController extends Controller
 
     public function tambahDataProyek(Request $request)
     {
-        dosenDropdown();
+        $this->dosenDropdown(); // Perbaiki pemanggilan method dosenDropdown()
+
         $request->validate([
             'nrp_mahasiswa' => 'required',
             'nama_mahasiswa' => 'required',
