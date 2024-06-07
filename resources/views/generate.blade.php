@@ -47,6 +47,7 @@
                   <th>Pembimbing 3</th>
                   <th>Penguji 1</th>
                   <th>Penguji 2</th>
+                  <th>action</th>
                 </tr>
               </thead>
               <tbody>
@@ -59,6 +60,16 @@
                   <td>{{ $data['id_mhs']['dosen_pembimbing3']['nama_dosen'] }}</td>
                   <td>{{ $data['penguji_1']['nama_dosen'] ?? "kosong"}} </td>
                   <td>{{ $data['penguji_2']['nama_dosen'] ?? "kosong" }} </td>
+                  <td>
+                    <div class="d-flex">
+                      <form action="{{ route('proyek-akhir.delete', $data['id_jadwal_generate']) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <input type="hidden" name="id_header" value="{{ $data['id_header'] }}">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</button>
+                      </form>
+                    </div>
+                  </td>
                 </tr>
                 @endforeach
               </tbody>

@@ -315,5 +315,58 @@ class ProyekAkhirController extends Controller
         return view('card', compact('headers'));
     }
 
+    public function edit($id_jadwal_generate)
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/data_generate?id_jadwal_generate=eq.' . $id_jadwal_generate);
+
+        $data_generate = $response->json();
+        return view('edit', compact('data_generate'));
+    }
+
+    public function update(Request $request, $id_jadwal_generate)
+    {
+        $validatedData = $request->validate([
+            'penguji_1' => 'required|uuid',
+            'penguji_2' => 'required|uuid',
+            'id_mhs' => 'required|uuid',
+            'id_header' => 'required|uuid',
+            'id_ruang' => 'required|uuid',
+        ]);
+
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+            'Content-Type' => 'application/json',
+        ])->patch($this->supabaseUrl . '/rest/v1/data_generate?id_jadwal_generate=eq.' . $id_jadwal_generate, $validatedData);
+
+        if ($response->successful()) {
+            return redirect()->route('proyek-akhir.getdata', $request->id_header)->with('success', 'Data updated successfully');
+        } else {
+            return redirect()->route('proyek-akhir.getdata', $request->id_header)->with('error', 'Failed to update data');
+        }
+    }
+
+    // public function destroy($id_jadwal_generate, Request $request)
+    // {
+    //     $response = Http::withHeaders([
+    //         'apikey' => $this->supabaseApiKey,
+    //         'Content-Type' => 'application/json',
+    //     ])->delete($this->supabaseUrl . '/rest/v1/data_generate?id_jadwal_generate=eq.' . $id_jadwal_generate);
+
+    //     $id_header = $request->input('id_header'); // Ensure you are getting the id_header from the request
+
+    //     if ($response->successful()) {
+    //         return redirect()->route('proyek-akhir.generate-hasil', ['id_header' => $id_header])->with('success', 'Data deleted successfully');
+    //     } else {
+    //         return redirect()->route('proyek-akhir.generate-hasil', ['id_header' => $id_header])->with('error', 'Failed to delete data');
+    //     }
+    // }
+
+    public function destroy($id_jadwal_generate)
+    {
+        DB::table('public.data_generate')->where('id_jadwal_generate', $id_jadwal_generate)->delete();
+        return redirect()->back()->with('success', 'Data berhasil dihapus.');
+    }
     
 }

@@ -33,6 +33,9 @@ Route::get('/proyek-akhir/generate-hasil/{id_header}', [ProyekAkhirController::c
 Route::post('/store-header', [HeaderController::class, 'store'])->name('header.store');
 Route::post('/proyek-akhir/import', [ProyekAkhirController::class, 'import'])->name('proyek-akhir.import');
 Route::get('/hasil-proyek-akhir',[ProyekAkhirController::class, 'getDataGenerate']);
+Route::get('/proyek-akhir/edit/{id_jadwal_generate}', [ProyekAkhirController::class, 'edit'])->name('proyek-akhir.edit');
+Route::post('/proyek-akhir/update/{id_jadwal_generate}', [ProyekAkhirController::class, 'update'])->name('proyek-akhir.update');
+Route::delete('/proyek-akhir/delete/{id_jadwal_generate}', [ProyekAkhirController::class, 'destroy'])->name('proyek-akhir.delete');
 
 // Route::get('/proyek-akhir/jadwal', function () {
 //     return view('/proyek-akhir/generate');
