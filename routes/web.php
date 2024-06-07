@@ -37,9 +37,10 @@ Route::get('/hasil-proyek-akhir',[ProyekAkhirController::class, 'getDataGenerate
 // Route::get('/proyek-akhir/jadwal', function () {
 //     return view('/proyek-akhir/generate');
 // });
-Route::get('/proyek-akhir',function () {
-    return view('proyek_akhir/card_pa');
-});
+
+// Route::get('/proyek-akhir',function () {
+//     return view('proyek_akhir/card_pa');
+// });
 
 Route::get('/proyek-akhir/jadwal',function () {
     return view('jadwal');
@@ -82,13 +83,13 @@ Route::get('/pengumuman/public/detail',function () {
 // Route::get('/proyek-akhir/data',function () {
 //     return view('/proyek_akhir/public_pa');
 // });
-Route::get('/proyek-akhir/data', [DataProyekAkhirController::class, 'getDataProyek']);
-Route::post('/proyek-akhir/data/tambah', [DataProyekAkhirController::class, 'tambahDataProyek'])->name('proyek-akhir.data.tambahDataProyek');
-Route::get('/proyek-akhir/data/edit/{id}', [DataProyekAkhirController::class, 'editDataProyek'])->name('proyek-akhir.data.editDataProyek');
+Route::get('/proyek-akhir/data/{id_master}', [DataProyekAkhirController::class, 'getDataProyek'])->name('proyek-akhir.data');
+Route::post('/proyek-akhir/data/tambah/{id_master}', [DataProyekAkhirController::class, 'tambahDataProyek'])->name('proyek-akhir.data.tambahDataProyek');
+Route::get('/proyek-akhir/data/edit/{id}', [DataProyekAkhirController::class, 'showEditForm'])->name('proyek-akhir.data.editDataProyek');
 Route::post('/proyek-akhir/data/update/{id}', [DataProyekAkhirController::class, 'updateDataProyek'])->name('proyek-akhir.data.updateDataProyek');
 Route::delete('/proyek-akhir/data/delete/{id}', [DataProyekAkhirController::class, 'deleteDataProyek'])->name('proyek-akhir.data.deleteDataProyek');
-Route::get('/proyek-akhir/data/tambah_pa', [DataProyekAkhirController::class, 'dosenDropdown'])->name('proyek-akhir.data.tambah_pa');
-
+Route::get('/proyek-akhir/data/tambah_pa/{id_master}', [DataProyekAkhirController::class, 'dosenDropdown'])->name('proyek-akhir.data.tambah_pa');
+Route::get('/proyek-akhir',[DataProyekAkhirController::class, 'getDataMasterPA']);
 Route::get('/proyek-akhir/form', [DataProyekAkhirController::class, 'showForm']);
 
 Route::get('/register',function () {

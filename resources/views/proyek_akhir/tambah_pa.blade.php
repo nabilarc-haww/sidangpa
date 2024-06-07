@@ -32,8 +32,9 @@
                   <div class="card-body p-5">
 
                     <!-- Vertical Form -->
-                    <form method="POST" action="{{ route('proyek-akhir.data.tambahDataProyek') }}">
+                    <form method="POST" action="{{ route('proyek-akhir.data.tambahDataProyek', ['id_master' => $id_master]) }}">
                       @csrf
+                      <input type="hidden" name="id_master" value="{{ $id_master }}">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-2">

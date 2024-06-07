@@ -26,15 +26,19 @@
             <h5 class="card-title">Data Proyek Akhir</h5>
             <!-- <p>Anda dapat melihat data proyek disini diantaranya judul proyek akhir, mahasiswa dan dosen pembimbingnya.</p> -->
 
+            @foreach($data_pa as $master)
+            <h2 class="text-center">{{ $master['jurusan'] }}</h2>
+            <p class="text-center">Tahun ajaran : {{ $master['tahun_ajaran'] }}</p>
+
             <div class="row">
               <div class="col-md-6"></div>
               <div class="col-md-6 pb-3" style="padding-left: 350px">
-                <a type="button" href="/proyek-akhir/data/tambah_pa" class="btn btn-success" style="background-color: #04BC00;" >
-                  + Tambah Pengumuman
+                <a type="button" href="{{ route('proyek-akhir.data.tambah_pa', ['id_master' => $id_master]) }}" class="btn btn-success" style="background-color: #04BC00;">
+                  + Tambah Proyek Akhir
                 </a>
               </div>
             </div>
-            
+           
             <!-- Table untuk menampilkan data -->
             <table class="table table-bordered">
                 <thead  class="table-light">
@@ -48,28 +52,28 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @foreach($data_pa as $data)
-                  <tr>
-                    <td>{{ $data['nama_mahasiswa'] }}</td>
-                    <td>{{ $data['judul_pa'] }}</td>
-                    <td>{{ $data['dosen_pembimbing1']['nama_dosen']}}</td>
-                    <td>{{ $data['dosen_pembimbing2']['nama_dosen']}}</td>
-                    <td>{{ $data['dosen_pembimbing3']['nama_dosen']}}</td>
-                    <td>
-                        <div class="d-flex">
-                          <form>
-                            <a class="btn btn-primary btn-sm me-2">
-                              Edit
-                            </a>
-                          </form>
-                          <form action="{{ route('proyek-akhir.data.deleteDataProyek', $data['id_mhs']) }}" method="post">
-                              @csrf
-                              @method('DELETE')
-                              <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</button>
-                          </form>
-                        </div>
-                      </td>
-                  </tr>
+               
+                    @foreach($master['proyek_akhir'] as $data)
+                      <tr>
+                        <td>{{ $data['nama_mahasiswa'] }}</td>
+                        <td>{{ $data['judul_pa'] }}</td>
+                        <td>{{ $data['dosen_pembimbing1']['nama_dosen'] ?? '-' }}</td>
+                        <td>{{ $data['dosen_pembimbing2']['nama_dosen'] ?? '-' }}</td>
+                        <td>{{ $data['dosen_pembimbing3']['nama_dosen'] ?? '-' }}</td>
+                        <td>
+                            <div class="d-flex">
+                              <a href="{{ route('proyek-akhir.data.editDataProyek', $data['id_mhs']) }}" class="btn btn-primary btn-sm me-2">
+                                Edit
+                              </a>
+                              <form action="{{ route('proyek-akhir.data.deleteDataProyek', $data['id_mhs']) }}" method="post">
+                                  @csrf
+                                  @method('DELETE')
+                                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</button>
+                              </form>
+                            </div>
+                        </td>
+                      </tr>
+                    @endforeach
                   @endforeach
                 </tbody>
               </table>

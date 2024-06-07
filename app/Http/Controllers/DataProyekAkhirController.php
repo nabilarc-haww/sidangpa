@@ -6,26 +6,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 
-
 class DataProyekAkhirController extends Controller
 {
-    public function getDataProyek()
+    public function getDataProyek($id_master)
     {
-        // Buat request ke Supabase menggunakan HTTP Client
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-        ])->get($this->supabaseUrl . '/rest/v1/proyek_akhir?select=*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)');
+        ])->get($this->supabaseUrl . '/rest/v1/master_pa', [
+            'id_master' => 'eq.' . $id_master,
+            'select' => '*,proyek_akhir(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*))'
+        ]);
 
         $data_pa = $response->json();
 
-        return view('proyek_akhir/public_pa', compact('data_pa'));
-
+        return view('proyek_akhir/public_pa', compact('data_pa', 'id_master'));
     }
 
-    public function tambahDataProyek(Request $request)
+    public function tambahDataProyek(Request $request, $id_master)
     {
-        $this->dosenDropdown(); // Perbaiki pemanggilan method dosenDropdown()
-
         $request->validate([
             'nrp_mahasiswa' => 'required',
             'nama_mahasiswa' => 'required',
@@ -42,23 +40,30 @@ class DataProyekAkhirController extends Controller
             'dosen_pembimbing1' => $request->dosen_pembimbing1,
             'dosen_pembimbing2' => $request->dosen_pembimbing2,
             'dosen_pembimbing3' => $request->dosen_pembimbing3,
+            'id_master' => $id_master,
         ]);
 
-        return redirect('/proyek-akhir/data')->with('success', 'Data berhasil ditambahkan.');
+        return redirect()->route('proyek-akhir.data', ['id_master' => $id_master])->with('success', 'Data berhasil ditambahkan.');
     }
 
-    public function editDataProyek($id)
+    public function showEditForm($id)
     {
-        // Mendapatkan data pengumuman berdasarkan ID
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-        ])->get($this->supabaseUrl . '/rest/v1/proyek_akhir?id_mhs=eq.' . $id);
+        ])->get($this->supabaseUrl . '/rest/v1/proyek_akhir', [
+            'id_mhs' => 'eq.' . $id,
+            'select' => '*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)'
+        ]);
 
         $data_pa = $response->json();
 
-        // dd($pengumuman);
-        // Mengirim data pengumuman ke view edit_ann
-        return view('edit_pa', compact('data_pa'));
+        $dosenResponse = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/dosen?select=*');
+
+        $dosen = $dosenResponse->json();
+
+        return view('proyek_akhir/edit_pa', compact('data_pa', 'dosen'));
     }
 
     public function updateDataProyek(Request $request, $id)
@@ -67,37 +72,55 @@ class DataProyekAkhirController extends Controller
             'nrp_mahasiswa' => 'required',
             'nama_mahasiswa' => 'required',
             'judul_pa' => 'required',
+            'dosen_pembimbing1' => 'required',
+            'dosen_pembimbing2' => 'required',
+            'dosen_pembimbing3' => 'required',
         ]);
 
-        // Update data pengumuman berdasarkan ID
-        DB::table('public.')
+        DB::table('public.proyek_akhir')
             ->where('id_mhs', $id)
             ->update([
                 'nrp_mahasiswa' => $request->nrp_mahasiswa,
                 'nama_mahasiswa' => $request->nama_mahasiswa,
                 'judul_pa' => $request->judul_pa,
+                'dosen_pembimbing1' => $request->dosen_pembimbing1,
+                'dosen_pembimbing2' => $request->dosen_pembimbing2,
+                'dosen_pembimbing3' => $request->dosen_pembimbing3,
             ]);
 
-        return redirect('/proyek-akhir/data')->with('success', 'Data berhasil diperbarui.');
+        return redirect()->route('proyek-akhir.data', ['id_master' => $request->id_master])->with('success', 'Data berhasil diupdate.');
     }
 
-    public function dosenDropdown()
+
+    public function deleteDataProyek($id)
     {
-        // Ambil data dosen dari Supabase 
+        DB::table('public.proyek_akhir')->where('id_mhs', $id)->delete();
+        return redirect()->back()->with('success', 'Data berhasil dihapus.');
+    }
+
+    public function dosenDropdown($id_master)
+    {
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
         ])->get($this->supabaseUrl . '/rest/v1/dosen?select=*');
 
-        // Check if the request was successful
         if ($response->failed()) {
             return response()->json(['error' => 'Failed to retrieve data from API'], 500);
         }
 
-        // Get the JSON response from the API call
         $dosen = $response->json();
 
-        // Return the view with the data dosen
-        return view('proyek_akhir/tambah_pa', compact('dosen'));
+        return view('proyek_akhir/tambah_pa', compact('dosen', 'id_master'));
     }
 
+    public function getDataMasterPA()
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/master_pa?select=*,proyek_akhir(*)');
+
+        $master_pa = $response->json();
+
+        return view('proyek_akhir/card_pa', compact('master_pa'));
+    }
 }

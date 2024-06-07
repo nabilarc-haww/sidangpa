@@ -35,7 +35,7 @@
 
 
   <div class="pagetitle">
-    <h1>Penjadwalan Sidang</h1>
+    <h1>Proyek Akhir</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="index.html">Home</a></li>
@@ -46,123 +46,31 @@
   </div><!-- End Page Title -->
 
   <section class="section">
-
         <div class="container">
-            <div class="row g-2">
+          <div class="row g-2">
+            @foreach($master_pa as $data)
               <div class="col-6">
                 <div class="card card-body">
-                    <small class="text-muted mt-3" style="font-size: 12px">
-                        <i class="bi bi-clock"></i> Senin, 23 Juni 2024
-                    </small>
-                    <h4 class="card-title m-0 py-3">D3 Teknik Informatika</h5>
-                    <div class="row mb-2">
+                  <small class="text-muted mt-3" style="font-size: 12px">
+                      <i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($data['created_at'])->locale('id')->isoFormat('DD MMMM YYYY') }}
+                  </small>
+                  <h4 class="card-title m-0 py-3">{{ $data['jurusan'] }}</h4>
+                  <div class="row mb-2">
                       <div class="col-4">
-                        <strong>Tahun Ajaran</strong>
+                          <strong>Tahun Ajaran</strong>
                       </div>
                       <div class="col-8">
-                        : 2023 / 2024
+                          : {{ $data['tahun_ajaran'] }}
                       </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Mahasiswa</strong>
-                      </div>
-                      <div class="col-8">
-                        : 51 orang
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-end mt-2">
-                      <button class="btn btn-success me-2"  style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
-                      <button class="btn btn-primary" style="font-size: 14px;">Lihat Data</button>
-                    </div>
-                  </div>     
-              </div>
-              <div class="col-6">
-                <div class="card card-body">
-                    <small class="text-muted mt-3" style="font-size: 12px">
-                        <i class="bi bi-clock"></i> Senin, 23 Juni 2024
-                    </small>
-                    <h4 class="card-title m-0 py-3">D3 Teknik Informatika</h5>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahun Ajaran</strong>
-                      </div>
-                      <div class="col-8">
-                        : 2023 / 2024
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Mahasiswa</strong>
-                      </div>
-                      <div class="col-8">
-                        : 51 orang
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-end mt-2">
-                      <button class="btn btn-success me-2"  style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
-                      <button class="btn btn-primary" style="font-size: 14px;">Lihat Data</button>
-                    </div>
-                  </div>     
-              </div>
-              <div class="col-6">
-                <div class="card card-body">
-                    <small class="text-muted mt-3" style="font-size: 12px">
-                        <i class="bi bi-clock"></i> Senin, 23 Juni 2024
-                    </small>
-                    <h4 class="card-title m-0 py-3">D3 Teknik Informatika</h5>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahun Ajaran</strong>
-                      </div>
-                      <div class="col-8">
-                        : 2023 / 2024
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Mahasiswa</strong>
-                      </div>
-                      <div class="col-8">
-                        : 51 orang
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-end mt-2">
-                      <button class="btn btn-success me-2"  style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
-                      <button class="btn btn-primary" style="font-size: 14px;">Lihat Data</button>
-                    </div>
-                  </div>     
-              </div>
-              <div class="col-6">
-                <div class="card card-body">
-                    <small class="text-muted mt-3" style="font-size: 12px">
-                        <i class="bi bi-clock"></i> Senin, 23 Juni 2024
-                    </small>
-                    <h4 class="card-title m-0 py-3">D3 Teknik Informatika</h5>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Tahun Ajaran</strong>
-                      </div>
-                      <div class="col-8">
-                        : 2023 / 2024
-                      </div>
-                    </div>
-                    <div class="row mb-2">
-                      <div class="col-4">
-                        <strong>Mahasiswa</strong>
-                      </div>
-                      <div class="col-8">
-                        : 51 orang
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-end mt-2">
-                      <button class="btn btn-success me-2"  style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
-                      <button class="btn btn-primary" style="font-size: 14px;">Lihat Data</button>
-                    </div>
-                  </div>     
-              </div>
-            </div>                
+                  </div>
+                  <div class="d-flex justify-content-end mt-2">
+                      <button class="btn btn-success me-2" style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
+                      <a href="{{ url('/proyek-akhir/data/'.$data['id_master'])  }}" class="btn btn-primary" style="font-size: 14px;">Lihat Hasil</a>
+                      <!-- <button class="btn btn-primary" style="font-size: 14px;">Lihat Data</button> -->
+                  </div>
+              </div>     
           </div>
+      @endforeach
 
     </div>
   </section>
