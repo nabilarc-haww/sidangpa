@@ -6,6 +6,13 @@
 
 <main id="main" class="main">
 
+  @if(session('success'))
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  @endif
+
   <div class="pagetitle">
     <h1>Penjadwalan Sidang</h1>
     <nav>
@@ -62,6 +69,13 @@
                   <td>{{ $data['penguji_2']['nama_dosen'] ?? "kosong" }} </td>
                   <td>
                     <div class="d-flex">
+                    <form action="{{ route('proyek-akhir.update', $data['id_jadwal_generate']) }}" method="POST">
+                        @csrf
+                        @method('POST')
+                        <input type="hidden" name="id_header" value="{{ $data['id_header'] }}">
+                        <a href="{{ route('proyek-akhir.edit', $data['id_jadwal_generate']) }}" class="btn btn-primary btn-sm me-2">Edit</a>
+                    </form>
+
                       <form action="{{ route('proyek-akhir.delete', $data['id_jadwal_generate']) }}" method="POST">
                         @csrf
                         @method('DELETE')

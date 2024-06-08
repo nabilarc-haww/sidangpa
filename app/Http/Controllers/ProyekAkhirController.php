@@ -319,49 +319,60 @@ class ProyekAkhirController extends Controller
     {
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-        ])->get($this->supabaseUrl . '/rest/v1/data_generate?id_jadwal_generate=eq.' . $id_jadwal_generate);
+        ])->get($this->supabaseUrl . '/rest/v1/data_generate', [
+            'id_jadwal_generate' => 'eq.' . $id_jadwal_generate,
+            'select' => '*,penguji_1(*),penguji_2(*),id_mhs(*,dosen_pembimbing1(*), dosen_pembimbing2(*), dosen_pembimbing3(*))'
+        ]);
 
-        $data_generate = $response->json();
-        return view('edit', compact('data_generate'));
+        $data = $response->json();
+
+        // Periksa apakah data ditemukan
+        if (empty($data)) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
+        
+        $data_generate = $data[0];
+        $id_header = $data_generate['id_header'];
+
+        $dosenResponse = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/dosen?select=*');
+
+        $dosen = $dosenResponse->json();
+
+        $ruangResponse = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/ruang?select=*');
+
+        $ruang = $ruangResponse->json();
+
+        return view('edit', compact('data_generate', 'dosen', 'ruang',  'id_header'));
     }
+
 
     public function update(Request $request, $id_jadwal_generate)
     {
         $validatedData = $request->validate([
             'penguji_1' => 'required|uuid',
             'penguji_2' => 'required|uuid',
-            'id_mhs' => 'required|uuid',
-            'id_header' => 'required|uuid',
             'id_ruang' => 'required|uuid',
+            'id_header' => 'required|uuid',
         ]);
+
+        // $validatedData['id_header'] = $request->id_header;
 
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
             'Content-Type' => 'application/json',
         ])->patch($this->supabaseUrl . '/rest/v1/data_generate?id_jadwal_generate=eq.' . $id_jadwal_generate, $validatedData);
 
+        // return redirect()->back()->with('success', 'Data berhasil di Update.');
         if ($response->successful()) {
-            return redirect()->route('proyek-akhir.getdata', $request->id_header)->with('success', 'Data updated successfully');
+            return redirect()->route('proyek-akhir.getdata', ['id_header' => $validatedData['id_header']])->with('success', 'Data updated successfully');
         } else {
-            return redirect()->route('proyek-akhir.getdata', $request->id_header)->with('error', 'Failed to update data');
+            return redirect()->route('proyek-akhir.getdata', ['id_header' => $validatedData['id_header']])->with('error', 'Failed to update data');
         }
     }
-
-    // public function destroy($id_jadwal_generate, Request $request)
-    // {
-    //     $response = Http::withHeaders([
-    //         'apikey' => $this->supabaseApiKey,
-    //         'Content-Type' => 'application/json',
-    //     ])->delete($this->supabaseUrl . '/rest/v1/data_generate?id_jadwal_generate=eq.' . $id_jadwal_generate);
-
-    //     $id_header = $request->input('id_header'); // Ensure you are getting the id_header from the request
-
-    //     if ($response->successful()) {
-    //         return redirect()->route('proyek-akhir.generate-hasil', ['id_header' => $id_header])->with('success', 'Data deleted successfully');
-    //     } else {
-    //         return redirect()->route('proyek-akhir.generate-hasil', ['id_header' => $id_header])->with('error', 'Failed to delete data');
-    //     }
-    // }
 
     public function destroy($id_jadwal_generate)
     {
