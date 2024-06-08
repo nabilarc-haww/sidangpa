@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str; 
-
+use PDF;
 
 class ProyekAkhirController extends Controller
 {
@@ -326,7 +326,6 @@ class ProyekAkhirController extends Controller
 
         $data = $response->json();
 
-        // Periksa apakah data ditemukan
         if (empty($data)) {
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
         }
@@ -359,14 +358,11 @@ class ProyekAkhirController extends Controller
             'id_header' => 'required|uuid',
         ]);
 
-        // $validatedData['id_header'] = $request->id_header;
-
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
             'Content-Type' => 'application/json',
         ])->patch($this->supabaseUrl . '/rest/v1/data_generate?id_jadwal_generate=eq.' . $id_jadwal_generate, $validatedData);
 
-        // return redirect()->back()->with('success', 'Data berhasil di Update.');
         if ($response->successful()) {
             return redirect()->route('proyek-akhir.getdata', ['id_header' => $validatedData['id_header']])->with('success', 'Data updated successfully');
         } else {
@@ -378,6 +374,64 @@ class ProyekAkhirController extends Controller
     {
         DB::table('public.data_generate')->where('id_jadwal_generate', $id_jadwal_generate)->delete();
         return redirect()->back()->with('success', 'Data berhasil dihapus.');
+    }
+
+    public function downloadPDF($id_header)
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/header', [
+            'id_header' => 'eq.' . $id_header,
+            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*),penguji_1(*),penguji_2(*))'
+        ]);
+
+        $proyek_akhir = $response->json();
+        
+        // Initialize array to store the final result
+        $finalResult = [];
+
+        foreach ($proyek_akhir as $header) {
+            // Prepare the basic structure of each header entry
+            $headerEntry = [
+                'created_at' => $header['created_at'],
+                'judul' => $header['judul'],
+                'prodi' => $header['prodi'],
+                'tanggal' => $header['tanggal'],
+                'waktu'=> $header['waktu'],
+                'tahapan_sidang' => $header['tahapan_sidang'],
+                'id_header' => $header['id_header'],
+                'data_generate' => []
+            ];
+
+            // Group the data_generate entries by id_ruang within each header
+            $groupedData = [];
+
+            if (isset($header['data_generate'])) {
+                foreach ($header['data_generate'] as $data) {
+                    $idRuang = $data['id_ruang']['id_ruang'];
+                    if (!isset($groupedData[$idRuang])) {
+                        $groupedData[$idRuang] = [
+                            'id_ruang' => $idRuang,
+                            'nama_ruang' => $data['id_ruang']['nama_ruang'],
+                            'kode_ruang' => $data['id_ruang']['kode_ruang'],
+                            'letak' => $data['id_ruang']['letak'],
+                            'data_generate' => []
+                        ];
+                    }
+                    $groupedData[$idRuang]['data_generate'][] = $data;
+                }
+            }
+
+            // Convert groupedData to a numerically indexed array and add to headerEntry
+            $headerEntry['data_generate'] = array_values($groupedData);
+
+            // Add the prepared headerEntry to the final result
+            $finalResult[] = $headerEntry;
+        }
+
+        $pdf = PDF::loadView('generate-pdf', compact('finalResult'));
+
+        return $pdf->download('jadwal_sidang.pdf');
     }
     
 }

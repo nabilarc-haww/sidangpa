@@ -36,6 +36,7 @@ Route::get('/hasil-proyek-akhir',[ProyekAkhirController::class, 'getDataGenerate
 Route::get('/proyek-akhir/edit/{id_jadwal_generate}', [ProyekAkhirController::class, 'edit'])->name('proyek-akhir.edit');
 Route::post('/proyek-akhir/update/{id_jadwal_generate}', [ProyekAkhirController::class, 'update'])->name('proyek-akhir.update');
 Route::delete('/proyek-akhir/delete/{id_jadwal_generate}', [ProyekAkhirController::class, 'destroy'])->name('proyek-akhir.delete');
+Route::get('/proyek-akhir/download-pdf/{id_header}', [ProyekAkhirController::class, 'downloadPdf'])->name('proyek-akhir.downloadPdf');
 
 // Route::get('/proyek-akhir/jadwal', function () {
 //     return view('/proyek-akhir/generate');

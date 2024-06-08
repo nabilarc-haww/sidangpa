@@ -52,7 +52,7 @@
               </div>
             </div>
             <div class="d-flex justify-content-end mt-2">
-              <button class="btn btn-success me-2"  style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
+             <a href="{{ url('/proyek-akhir/download-pdf/'.$header['id_header']) }}" class="btn btn-success me-2" style="background-color: #04BC00;border: none; font-size: 14px;">Download</a>
               <a href="{{ url('/proyek-akhir/generate-hasil/'.$header['id_header'])  }}" class="btn btn-primary" style="font-size: 14px;">Lihat Hasil</a>
             </div>
           </div>     
