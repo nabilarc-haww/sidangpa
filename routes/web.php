@@ -9,25 +9,10 @@ use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\DataProyekAkhirController;
 use App\Http\Controllers\AuthController;
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
-// Route::middleware('auth')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-// });
-
-// require __DIR__.'/auth.php';
-
 Route::get('/',function () {
     return view('home');
 });
 
-// Route::get('/proyek-akhir/jadwal',function () {
-//     return view('jadwal');
-// });
 Route::get('/proyek-akhir/generate/{id_header}', [ProyekAkhirController::class, 'generate'])->name('proyek-akhir.generate');
 Route::get('/proyek-akhir/generate-hasil/{id_header}', [ProyekAkhirController::class, 'getData'])->name('proyek-akhir.getdata');
 Route::post('/store-header', [HeaderController::class, 'store'])->name('header.store');
@@ -38,25 +23,11 @@ Route::post('/proyek-akhir/update/{id_jadwal_generate}', [ProyekAkhirController:
 Route::delete('/proyek-akhir/delete/{id_jadwal_generate}', [ProyekAkhirController::class, 'destroy'])->name('proyek-akhir.delete');
 Route::get('/proyek-akhir/download-pdf/{id_header}', [ProyekAkhirController::class, 'downloadPdf'])->name('proyek-akhir.downloadPdf');
 
-// Route::get('/proyek-akhir/jadwal', function () {
-//     return view('/proyek-akhir/generate');
-// });
-
-// Route::get('/proyek-akhir',function () {
-//     return view('proyek_akhir/card_pa');
-// });
-
 Route::get('/proyek-akhir/jadwal',function () {
-    return view('jadwal');
+return view('jadwal');
 });
 
-// Route::get('/hasil-proyek-akhir',function () {
-//     return view('card');
-// });
-
 Route::get('/riset-group', [RisetGroupController::class, 'getAllData']);
-
-// Route::get('/dosen', [DosenController::class, 'getAllData']);
 Route::get('/pengumuman',function () {
     return view('announce/announce');
 });
@@ -83,10 +54,6 @@ Route::get('/pengumuman/public/detail',function () {
     return view('announce/detail_public');
 });
 
-
-// Route::get('/proyek-akhir/data',function () {
-//     return view('/proyek_akhir/public_pa');
-// });
 Route::get('/proyek-akhir/data/{id_master}', [DataProyekAkhirController::class, 'getDataProyek'])->name('proyek-akhir.data');
 Route::post('/proyek-akhir/data/tambah/{id_master}', [DataProyekAkhirController::class, 'tambahDataProyek'])->name('proyek-akhir.data.tambahDataProyek');
 Route::get('/proyek-akhir/data/edit/{id}', [DataProyekAkhirController::class, 'showEditForm'])->name('proyek-akhir.data.editDataProyek');
@@ -104,6 +71,35 @@ Route::get('/login',function () {
     return view('user/login');
 });
 
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
+
+// require __DIR__.'/auth.php';
+
+// Route::get('/proyek-akhir/jadwal',function () {
+//     return view('jadwal');
+// });
+// Route::get('/proyek-akhir/jadwal', function () {
+//     return view('/proyek-akhir/generate');
+// });
+// Route::get('/proyek-akhir',function () {
+//     return view('proyek_akhir/card_pa');
+// });
+// Route::get('/hasil-proyek-akhir',function () {
+//     return view('card');
+// });
+
+
+// Route::get('/proyek-akhir/data',function () {
+//     return view('/proyek_akhir/public_pa');
+// });
 // Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 // Route::post('/register', [AuthController::class, 'register']);
 // Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

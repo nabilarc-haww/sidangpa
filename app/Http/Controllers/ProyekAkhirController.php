@@ -143,166 +143,167 @@ class ProyekAkhirController extends Controller
     }
     
     public function generate($id_header, $importData)
-    {
-        // Fetch data from the provided URLs with API key in headers
-        $risetGroupsResponse = Http::withHeaders([
-            'apikey' => $this->supabaseApiKey,
-        ])->get('https://ihpqktbogxquohofeevj.supabase.co/rest/v1/riset_group?select=*,dosen(*),ruang(*)');
+{
+    // Fetch data from the provided URLs with API key in headers
+    $risetGroupsResponse = Http::withHeaders([
+        'apikey' => $this->supabaseApiKey,
+    ])->get('https://ihpqktbogxquohofeevj.supabase.co/rest/v1/riset_group?select=*,dosen(*),ruang(*)');
     
-        // Use importData instead of fetching mahasiswaResponse from API
-        $mahasiswaData = $importData;
+    // Use importData instead of fetching mahasiswaResponse from API
+    $mahasiswaData = $importData;
     
-        $headerResponse = Http::withHeaders([
-            'apikey' => $this->supabaseApiKey,
-        ])->get("https://ihpqktbogxquohofeevj.supabase.co/rest/v1/header?id_header=eq.{$id_header}");
+    $headerResponse = Http::withHeaders([
+        'apikey' => $this->supabaseApiKey,
+    ])->get("https://ihpqktbogxquohofeevj.supabase.co/rest/v1/header?id_header=eq.{$id_header}");
     
-        // Check if the data retrieval was successful
-        if ($risetGroupsResponse->failed() || $headerResponse->failed()) {
-            return response()->json(['error' => 'Failed to retrieve data from API'], 500);
+    // Check if the data retrieval was successful
+    if ($risetGroupsResponse->failed() || $headerResponse->failed()) {
+        return response()->json(['error' => 'Failed to retrieve data from API'], 500);
+    }
+    
+    // Get the JSON response from the API calls
+    $risetGroups = $risetGroupsResponse->json();
+    $headerData = $headerResponse->json();
+    
+    // Initialize combinedData array grouped by riset_group
+    $groupedData = [];
+    
+    // Create a mapping of dosen id to dosen name for quick lookup
+    $dosenMap = [];
+    foreach ($risetGroups as $risetGroup) {
+        foreach ($risetGroup['dosen'] as $dosen) {
+            $dosenMap[$dosen['id_dosen']] = $dosen['nama_dosen'];
         }
+    }
     
-        // Get the JSON response from the API calls
-        $risetGroups = $risetGroupsResponse->json();
-        $headerData = $headerResponse->json();
-    
-        // Initialize combinedData array grouped by riset_group
-        $groupedData = [];
-    
-        // Create a mapping of dosen id to dosen name for quick lookup
-        $dosenMap = [];
+    // Group mahasiswa by riset_group based on dosen_pembimbing1
+    foreach ($mahasiswaData as $mahasiswa) {
         foreach ($risetGroups as $risetGroup) {
             foreach ($risetGroup['dosen'] as $dosen) {
-                $dosenMap[$dosen['id_dosen']] = $dosen['nama_dosen'];
-            }
-        }
-    
-        // Loop through each proyek_akhir_mhs entry
-        foreach ($mahasiswaData as $mahasiswa) {
-            // Find the corresponding riset_group based on dosen_pembimbing1
-            foreach ($risetGroups as $risetGroup) {
-                foreach ($risetGroup['dosen'] as $dosen) {
-                    if ($dosen['id_dosen'] === $mahasiswa['dosen_pembimbing1']) {
-                        // Check if the riset_group is already in groupedData
-                        if (!isset($groupedData[$risetGroup['id_rg']])) {
-                            // Initialize the riset_group entry with details and an empty mahasiswa array
-                            $groupedData[$risetGroup['id_rg']] = [
-                                'riset_group' => $risetGroup,
-                                'mahasiswa' => [],
-                            ];
-                        }
-    
-                        // Add the mahasiswa to the corresponding riset_group entry
-                        $groupedData[$risetGroup['id_rg']]['mahasiswa'][] = $mahasiswa;
-                        break 2; // Break both inner loops
+                if ($dosen['id_dosen'] === $mahasiswa['dosen_pembimbing1']) {
+                    if (!isset($groupedData[$risetGroup['id_rg']])) {
+                        $groupedData[$risetGroup['id_rg']] = [
+                            'riset_group' => $risetGroup,
+                            'mahasiswa' => [],
+                        ];
                     }
+                    $groupedData[$risetGroup['id_rg']]['mahasiswa'][] = $mahasiswa;
+                    break 2; // Break both inner loops
                 }
             }
         }
-    
-        // Assign examiners to each mahasiswa
-        foreach ($groupedData as &$group) {
-            $dosenList = $group['riset_group']['dosen'];
-    
-            foreach ($group['mahasiswa'] as &$mahasiswa) {
+    }
+
+    // Distribute mahasiswa into available rooms
+    foreach ($groupedData as &$group) {
+        $rooms = $group['riset_group']['ruang'];
+        $roomCount = count($rooms);
+        $mahasiswaList = $group['mahasiswa'];
+        $mahasiswaCount = count($mahasiswaList);
+
+        for ($i = 0; $i < $mahasiswaCount; $i++) {
+            $roomIndex = $i % $roomCount;
+            if (!isset($rooms[$roomIndex]['mahasiswa'])) {
+                $rooms[$roomIndex]['mahasiswa'] = [];
+            }
+            $rooms[$roomIndex]['mahasiswa'][] = $mahasiswaList[$i];
+        }
+
+        // Assign updated rooms back to the riset_group
+        $group['riset_group']['ruang'] = $rooms;
+    }
+
+    // Assign examiners to each mahasiswa ensuring no duplicate examiners across rooms
+    foreach ($groupedData as &$group) {
+        $dosenList = $group['riset_group']['dosen'];
+        $assignedExaminers = [];
+
+        foreach ($group['riset_group']['ruang'] as &$ruang) {
+            $availableDosen = array_filter($dosenList, function($dosen) use ($assignedExaminers) {
+                return !isset($assignedExaminers[$dosen['id_dosen']]);
+            });
+
+            $availableDosen = array_values($availableDosen); // Re-index the array
+
+            foreach ($ruang['mahasiswa'] as &$mahasiswa) {
                 $dosenPembimbing1 = $mahasiswa['dosen_pembimbing1'];
                 $dosenPembimbing2 = $mahasiswa['dosen_pembimbing2'] ?? null;
                 $dosenPembimbing3 = $mahasiswa['dosen_pembimbing3'] ?? null;
-    
+                
                 // Add names for pembimbing
                 $mahasiswa['nama_dosen_pembimbing1'] = $dosenMap[$dosenPembimbing1] ?? null;
                 $mahasiswa['nama_dosen_pembimbing2'] = $dosenMap[$dosenPembimbing2] ?? null;
                 $mahasiswa['nama_dosen_pembimbing3'] = $dosenMap[$dosenPembimbing3] ?? null;
-    
-                $availableDosen = array_filter($dosenList, function($dosen) use ($dosenPembimbing1, $dosenPembimbing2, $dosenPembimbing3) {
+
+                // Filter out pembimbing from available examiners
+                $availableDosenForMahasiswa = array_filter($availableDosen, function($dosen) use ($dosenPembimbing1, $dosenPembimbing2, $dosenPembimbing3) {
                     return $dosen['id_dosen'] !== $dosenPembimbing1
                         && $dosen['id_dosen'] !== $dosenPembimbing2
                         && $dosen['id_dosen'] !== $dosenPembimbing3;
                 });
-    
-                $availableDosen = array_values($availableDosen); // Re-index the array
-    
-                if (count($availableDosen) >= 2) {
-                    $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
-                    $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
-                    $mahasiswa['penguji2'] = $availableDosen[1]['id_dosen'];
-                    $mahasiswa['nama_penguji2'] = $availableDosen[1]['nama_dosen'];
-                } elseif (count($availableDosen) === 1) {
-                    $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
-                    $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
-                    $mahasiswa['penguji2'] = null;
-                    $mahasiswa['nama_penguji2'] = null;
-                } else {
-                    $mahasiswa['penguji1'] = null;
-                    $mahasiswa['nama_penguji1'] = null;
-                    $mahasiswa['penguji2'] = null;
-                    $mahasiswa['nama_penguji2'] = null;
-                }
-            }
-        }
-    
-        // Group mahasiswa by their penguji (examiners)
-        foreach ($groupedData as &$group) {
-            $mahasiswaGroups = [];
-    
-            // Create groups based on penguji1 and penguji2
-            foreach ($group['mahasiswa'] as $mahasiswa) {
-                $key = $mahasiswa['penguji1'] . '-' . $mahasiswa['penguji2'];
-                if (!isset($mahasiswaGroups[$key])) {
-                    $mahasiswaGroups[$key] = [];
-                }
-                $mahasiswaGroups[$key][] = $mahasiswa;
-            }
-    
-            // Distribute mahasiswa groups into available rooms
-            $rooms = $group['riset_group']['ruang'];
-            $roomCount = count($rooms);
-            $groupKeys = array_keys($mahasiswaGroups);
-            $groupCount = count($groupKeys);
-    
-            // Ensure we have at least one room for each group, or groups will be split across available rooms
-            if ($roomCount > 0) {
-                for ($i = 0; $i < $groupCount; $i++) {
-                    $roomIndex = $i % $roomCount;
-                    if (!isset($rooms[$roomIndex]['mahasiswa'])) {
-                        $rooms[$roomIndex]['mahasiswa'] = [];
-                    }
-                    $rooms[$roomIndex]['mahasiswa'] = array_merge($rooms[$roomIndex]['mahasiswa'], $mahasiswaGroups[$groupKeys[$i]]);
-                }
-            }
-    
-            // Assign updated rooms back to the riset_group
-            $group['riset_group']['ruang'] = $rooms;
-        }
 
-        // Create the new response array with only the required fields
-        $response = [];
-        foreach ($groupedData as $group) {
-            foreach ($group['riset_group']['ruang'] as $ruang) {
-                foreach ($ruang['mahasiswa'] as $mahasiswa) {
-                    $response[] = [
-                        'penguji_1' => $mahasiswa['penguji1'],
-                        'penguji_2' => $mahasiswa['penguji2'],
-                        'id_mhs' => $mahasiswa['id_mhs'],
-                        'id_header' => $id_header,
-                        'id_ruang' => $ruang['id_ruang'],
-                    ];
+                $availableDosenForMahasiswa = array_values($availableDosenForMahasiswa); // Re-index the array
+
+                if (count($availableDosenForMahasiswa) >= 2) {
+                    $mahasiswa['penguji1'] = $availableDosenForMahasiswa[0]['id_dosen'];
+                    $mahasiswa['nama_penguji1'] = $availableDosenForMahasiswa[0]['nama_dosen'];
+                    $mahasiswa['penguji2'] = $availableDosenForMahasiswa[1]['id_dosen'];
+                    $mahasiswa['nama_penguji2'] = $availableDosenForMahasiswa[1]['nama_dosen'];
+                    $assignedExaminers[$availableDosenForMahasiswa[0]['id_dosen']] = true;
+                    $assignedExaminers[$availableDosenForMahasiswa[1]['id_dosen']] = true;
+                } elseif (count($availableDosenForMahasiswa) === 1) {
+                    $mahasiswa['penguji1'] = $availableDosenForMahasiswa[0]['id_dosen'];
+                    $mahasiswa['nama_penguji1'] = $availableDosenForMahasiswa[0]['nama_dosen'];
+                    $mahasiswa['penguji2'] = null;
+                    $mahasiswa['nama_penguji2'] = null;
+                    $assignedExaminers[$availableDosenForMahasiswa[0]['id_dosen']] = true;
+                } else {
+                    // Ensure there is no null value for examiners
+                    if (!empty($availableDosen)) {
+                        $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
+                        $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
+                        $mahasiswa['penguji2'] = $availableDosen[1]['id_dosen'] ?? null;
+                        $mahasiswa['nama_penguji2'] = $availableDosen[1]['nama_dosen'] ?? null;
+                        $assignedExaminers[$availableDosen[0]['id_dosen']] = true;
+                        if (isset($availableDosen[1])) {
+                            $assignedExaminers[$availableDosen[1]['id_dosen']] = true;
+                        }
+                    }
                 }
             }
         }
-    
-        // Send the response data to the database
-        $postResponse = Http::withHeaders([
-            'apikey' => $this->supabaseApiKey,
-        ])->post($this->supabaseUrl . '/rest/v1/data_generate', $response);
-    
-        // Check if the post request was successful
-        if ($postResponse->failed()) {
-            return response()->json(['error' => 'Failed to send data to the database'], 500);
-        }
-    
-        session(['id_header' => $id_header]);
-        return redirect('/proyek-akhir/generate-hasil/'.$id_header)->with('success', 'Data header berhasil disimpan.');
     }
+
+    // Create the new response array with only the required fields
+    $response = [];
+    foreach ($groupedData as $group) {
+        foreach ($group['riset_group']['ruang'] as $ruang) {
+            foreach ($ruang['mahasiswa'] as $mahasiswa) {
+                $response[] = [
+                    'penguji_1' => $mahasiswa['penguji1'],
+                    'penguji_2' => $mahasiswa['penguji2'],
+                    'id_mhs' => $mahasiswa['id_mhs'],
+                    'id_header' => $id_header,
+                    'id_ruang' => $ruang['id_ruang'],
+                ];
+            }
+        }
+    }
+    
+    // Send the response data to the database
+    $postResponse = Http::withHeaders([
+        'apikey' => $this->supabaseApiKey,
+    ])->post($this->supabaseUrl . '/rest/v1/data_generate', $response);
+    
+    // Check if the post request was successful
+    if ($postResponse->failed()) {
+        return response()->json(['error' => 'Failed to send data to the database'], 500);
+    }
+    
+    session(['id_header' => $id_header]);
+    return redirect('/proyek-akhir/generate-hasil/'.$id_header)->with('success', 'Data header berhasil disimpan.');
+}
+
     
     public function getDataGenerate()
     {
