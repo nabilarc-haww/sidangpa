@@ -1225,3 +1225,45 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
+
+.title-generate {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.title-pa {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.desc-generate {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.highlight {
+  font-size: 14px;
+  display: inline-block;
+  background-color: #FFEED7;
+  color: #FA6400;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.judul-tabel,
+.isi-tabel,
+.aksi {
+  font-size: 14px;
+}
+
+.aksi-edit,
+.aksi-hapus {
+  font-size: 13px;
+}
+
+
+
+
+
