@@ -242,38 +242,33 @@ class ProyekAkhirController extends Controller
     
         // Group mahasiswa by their penguji (examiners)
         foreach ($groupedData as &$group) {
-            $mahasiswaGroups = [];
-    
-            // Create groups based on penguji1 and penguji2
-            foreach ($group['mahasiswa'] as $mahasiswa) {
-                $key = $mahasiswa['penguji1'] . '-' . $mahasiswa['penguji2'];
-                if (!isset($mahasiswaGroups[$key])) {
-                    $mahasiswaGroups[$key] = [];
-                }
-                $mahasiswaGroups[$key][] = $mahasiswa;
-            }
-    
-            // Distribute mahasiswa groups into available rooms
             $rooms = $group['riset_group']['ruang'];
             $roomCount = count($rooms);
-            $groupKeys = array_keys($mahasiswaGroups);
-            $groupCount = count($groupKeys);
     
-            // Ensure we have at least one room for each group, or groups will be split across available rooms
             if ($roomCount > 0) {
-                for ($i = 0; $i < $groupCount; $i++) {
-                    $roomIndex = $i % $roomCount;
+                // Distribute mahasiswa to rooms ensuring each dosen_pembimbing1 is in one room only
+                $mahasiswaPerDosen = [];
+                foreach ($group['mahasiswa'] as $mahasiswa) {
+                    $dosenPembimbing1 = $mahasiswa['dosen_pembimbing1'];
+                    if (!isset($mahasiswaPerDosen[$dosenPembimbing1])) {
+                        $mahasiswaPerDosen[$dosenPembimbing1] = [];
+                    }
+                    $mahasiswaPerDosen[$dosenPembimbing1][] = $mahasiswa;
+                }
+    
+                $roomIndex = 0;
+                foreach ($mahasiswaPerDosen as $mahasiswaGroup) {
                     if (!isset($rooms[$roomIndex]['mahasiswa'])) {
                         $rooms[$roomIndex]['mahasiswa'] = [];
                     }
-                    $rooms[$roomIndex]['mahasiswa'] = array_merge($rooms[$roomIndex]['mahasiswa'], $mahasiswaGroups[$groupKeys[$i]]);
+                    $rooms[$roomIndex]['mahasiswa'] = array_merge($rooms[$roomIndex]['mahasiswa'], $mahasiswaGroup);
+                    $roomIndex = ($roomIndex + 1) % $roomCount;
                 }
             }
     
             // Assign updated rooms back to the riset_group
             $group['riset_group']['ruang'] = $rooms;
         }
-
         // Create the new response array with only the required fields
         $response = [];
         foreach ($groupedData as $group) {
