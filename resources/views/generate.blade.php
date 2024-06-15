@@ -14,7 +14,7 @@
   @endif
 
   <div class="pagetitle">
-    <h1>Penjadwalan Sidang</h1>
+    <h1>Hasil Penjadwalan</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="index.html">Home</a></li>
@@ -30,57 +30,56 @@
 
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Data Proyek Akhir</h5>
+            <h5 class="card-title"></h5>
             <!-- <p>Anda dapat melihat data proyek disini diantaranya judul proyek akhir, mahasiswa dan dosen pembimbingnya.</p> -->
-
             
             @foreach($finalResult as $header)
-            <h2 class="text-center">{{ $header['judul'] }}</h2>
-            <p class="text-center">Prodi: {{ $header['prodi'] }}</p>
-            <p class="text-center">Tanggal: {{ $header['tanggal'] }} </p>
-            <p class="text-center">Jam: {{ $header['waktu'] }} - Selesai </p>
-            <p class="text-center">Tahapan Sidang: {{ $header['tahapan_sidang'] }}</p>
+            <p class="title-generate text-center">{{ $header['judul'] }}</p>
+            <p class="desc-generate text-center">Prodi {{ $header['prodi'] }}</p>
+            <p class="desc-generate text-center">{{ $header['tanggal'] }} | Pukul {{ $header['waktu'] }} - Selesai </p>
+            <p class="desc-generate text-center">{{ $header['tahapan_sidang'] }}</p>
             
+            <div class="highlight mt-3 mb-1">Data Centric Artificial Intelligence and e-Business System</div>
             @foreach($header['data_generate'] as $ruang)
-            <h5>{{ $ruang['nama_ruang'] }} ({{ $ruang['kode_ruang'] }} - {{ $ruang['letak'] }})</h5>
+            <p class="nama-ruang" style="font-size: 16px;"><b>{{ $ruang['nama_ruang'] }}({{ $ruang['kode_ruang'] }} - {{ $ruang['letak'] }})</b></p>
             <!-- Table untuk menampilkan data -->
             <table class="table table-bordered">
               <thead  class="table-light">
                 <tr>
-                  <th>Nama Mahasiswa</th>
-                  <th>Judul</th>
-                  <th>Pembimbing 1</th>
-                  <th>Pembimbing 2</th>
-                  <th>Pembimbing 3</th>
-                  <th>Penguji 1</th>
-                  <th>Penguji 2</th>
-                  <th>action</th>
+                  <th class="judul-tabel">Nama Mahasiswa</th>
+                  <th class="judul-tabel">Judul</th>
+                  <th class="judul-tabel">Pembimbing 1</th>
+                  <th class="judul-tabel">Pembimbing 2</th>
+                  <th class="judul-tabel">Pembimbing 3</th>
+                  <th class="judul-tabel">Penguji 1</th>
+                  <th class="judul-tabel">Penguji 2</th>
+                  <th class="aksi">Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 @foreach($ruang['data_generate'] as $data)
                 <tr>
-                  <td>{{ $data['id_mhs']['nama_mahasiswa'] }}</td>
-                  <td>{{ $data['id_mhs']['judul_pa'] }}</td>
-                  <td>{{ $data['id_mhs']['dosen_pembimbing1']['nama_dosen'] }}</td>
-                  <td>{{ $data['id_mhs']['dosen_pembimbing2']['nama_dosen'] }}</td>
-                  <td>{{ $data['id_mhs']['dosen_pembimbing3']['nama_dosen'] }}</td>
-                  <td>{{ $data['penguji_1']['nama_dosen'] ?? "kosong"}} </td>
-                  <td>{{ $data['penguji_2']['nama_dosen'] ?? "kosong" }} </td>
+                  <td class="isi-tabel">{{ $data['id_mhs']['nama_mahasiswa'] }}</td>
+                  <td class="isi-tabel">{{ $data['id_mhs']['judul_pa'] }}</td>
+                  <td class="isi-tabel">{{ $data['id_mhs']['dosen_pembimbing1']['nama_dosen'] }}</td>
+                  <td class="isi-tabel">{{ $data['id_mhs']['dosen_pembimbing2']['nama_dosen'] }}</td>
+                  <td class="isi-tabel">{{ $data['id_mhs']['dosen_pembimbing3']['nama_dosen'] }}</td>
+                  <td class="isi-tabel">{{ $data['penguji_1']['nama_dosen'] ?? "kosong"}} </td>
+                  <td class="isi-tabel">{{ $data['penguji_2']['nama_dosen'] ?? "kosong" }} </td>
                   <td>
                     <div class="d-flex">
                     <form action="{{ route('proyek-akhir.update', $data['id_jadwal_generate']) }}" method="POST">
                         @csrf
                         @method('POST')
                         <input type="hidden" name="id_header" value="{{ $data['id_header'] }}">
-                        <a href="{{ route('proyek-akhir.edit', $data['id_jadwal_generate']) }}" class="btn btn-primary btn-sm me-2">Edit</a>
+                        <a href="{{ route('proyek-akhir.edit', $data['id_jadwal_generate']) }}" class="btn aksi-edit btn-primary btn-sm me-2">Edit</a>
                     </form>
 
                       <form action="{{ route('proyek-akhir.delete', $data['id_jadwal_generate']) }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <input type="hidden" name="id_header" value="{{ $data['id_header'] }}">
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</button>
+                        <button type="submit" class="btn aksi-hapus btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</button>
                       </form>
                     </div>
                   </td>

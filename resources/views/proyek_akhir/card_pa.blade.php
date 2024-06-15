@@ -33,17 +33,44 @@
     </div>
 </div>
 
-
-  <div class="pagetitle">
-    <h1>Proyek Akhir</h1>
-    <nav>
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-        <li class="breadcrumb-item">Proyek Akhir</li>
-        <li class="breadcrumb-item active">Program Studi</li>
-      </ol>
-    </nav>
-  </div><!-- End Page Title -->
+  <div class="row">
+    <div class="col">
+        <div class="pagetitle">
+            <h1>Proyek Akhir</h1>
+            <nav>
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item">Proyek Akhir</li>
+                <li class="breadcrumb-item active">Program Studi</li>
+              </ol>
+            </nav>
+        </div><!-- End Page Title -->
+    </div>
+    <div class="col" style="padding-left: 500px; padding-top: 10px;">
+      <div class="row">
+        <div class="col dropdown">
+          <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Program Studi
+          </button>
+          <ul class="dropdown-menu">
+            <li><button class="dropdown-item" type="button">Action</button></li>
+            <li><button class="dropdown-item" type="button">Another action</button></li>
+            <li><button class="dropdown-item" type="button">Something else here</button></li>
+          </ul>
+        </div>
+        <div class="col dropdown">
+          <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Tahun Ajaran
+          </button>
+          <ul class="dropdown-menu">
+            <li><button class="dropdown-item" type="button">Action</button></li>
+            <li><button class="dropdown-item" type="button">Another action</button></li>
+            <li><button class="dropdown-item" type="button">Something else here</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <section class="section">
         <div class="container">
