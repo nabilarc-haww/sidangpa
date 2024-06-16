@@ -31,20 +31,61 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title"></h5>
-            <!-- <p>Anda dapat melihat data proyek disini diantaranya judul proyek akhir, mahasiswa dan dosen pembimbingnya.</p> -->
+            
+            <!-- Filter Form -->
+            <form method="GET" action="{{ route('proyek-akhir.getdata', $id_header) }}">
+              <div class="row mb-3">
+                <div class="col-md-3">
+                  <label for="dosen_pembimbing1" class="form-label">Dosen Pembimbing 1</label>
+                  <select class="form-select" id="dosen_pembimbing1" name="dosen_pembimbing1">
+                    <option value="">Select Dosen Pembimbing 1</option>
+                    @foreach($dosenList as $dosen)
+                      <option value="{{ $dosen['nama_dosen'] }}" {{ request('dosen_pembimbing1') == $dosen['nama_dosen'] ? 'selected' : '' }}>{{ $dosen['nama_dosen'] }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label for="penguji_1" class="form-label">Penguji 1</label>
+                  <select class="form-select" id="penguji_1" name="penguji_1">
+                    <option value="">Select Penguji 1</option>
+                    @foreach($dosenList as $dosen)
+                      <option value="{{ $dosen['nama_dosen'] }}" {{ request('penguji_1') == $dosen['nama_dosen'] ? 'selected' : '' }}>{{ $dosen['nama_dosen'] }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label for="penguji_2" class="form-label">Penguji 2</label>
+                  <select class="form-select" id="penguji_2" name="penguji_2">
+                    <option value="">Select Penguji 2</option>
+                    @foreach($dosenList as $dosen)
+                      <option value="{{ $dosen['nama_dosen'] }}" {{ request('penguji_2') == $dosen['nama_dosen'] ? 'selected' : '' }}>{{ $dosen['nama_dosen'] }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                <div class="col-md-3">
+                <label class="form-label" style="visibility: hidden;">Hidden Label</label>
+                  <div>
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <!-- End Filter Form -->
             
             @foreach($finalResult as $header)
             <p class="title-generate text-center">{{ $header['judul'] }}</p>
             <p class="desc-generate text-center">Prodi {{ $header['prodi'] }}</p>
             <p class="desc-generate text-center">{{ $header['tanggal'] }} | Pukul {{ $header['waktu'] }} - Selesai </p>
             <p class="desc-generate text-center">{{ $header['tahapan_sidang'] }}</p>
+            <p class="desc-generate text-center">{{ $header['tahun_ajaran'] ?? "-" }}</p>
+
             
-            <div class="highlight mt-3 mb-1">Data Centric Artificial Intelligence and e-Business System</div>
             @foreach($header['data_generate'] as $ruang)
-            <p class="nama-ruang" style="font-size: 16px;"><b>{{ $ruang['nama_ruang'] }}({{ $ruang['kode_ruang'] }} - {{ $ruang['letak'] }})</b></p>
+            <div class="highlight mt-3 mb-1">{{ $ruang['riset_group'] }}</div>
+            <p class="nama-ruang" style="font-size: 16px;"><b>{{ $ruang['nama_ruang'] }} ({{ $ruang['kode_ruang'] }} - {{ $ruang['letak'] }})</b></p>
             <!-- Table untuk menampilkan data -->
             <table class="table table-bordered">
-              <thead  class="table-light">
+              <thead class="table-light">
                 <tr>
                   <th class="judul-tabel">Nama Mahasiswa</th>
                   <th class="judul-tabel">Judul</th>

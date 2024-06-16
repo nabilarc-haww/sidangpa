@@ -87,7 +87,7 @@
                       <label for="inputState" class="form-label">Tahun Ajaran</label>
                       <div class="row">
                         <div class="col-4">
-                            <select name="start_year" class="form-control" id="startYear">
+                            <select name="start_year" class="form-control" id="startYear" required>
                                 <!-- Years will be populated by JavaScript -->
                             </select>
                         </div>
@@ -95,7 +95,7 @@
                             <h3>/</h3>
                         </div>
                         <div class="col-4">
-                            <select name="end_year" class="form-control" id="endYear">
+                            <select name="end_year" class="form-control" id="endYear" required>
                                 <!-- Years will be populated by JavaScript -->
                             </select>
                         </div>
@@ -192,23 +192,22 @@
 
     // Function to populate year dropdowns
     function populateYearDropdowns(startYearId, endYearId, startYear, endYear) {
-            const startYearSelect = document.getElementById(startYearId);
-            const endYearSelect = document.getElementById(endYearId);
+        const startYearSelect = document.getElementById(startYearId);
+        const endYearSelect = document.getElementById(endYearId);
 
-            for (let year = startYear; year <= endYear; year++) {
-                let option = document.createElement("option");
-                option.value = year;
-                option.text = year;
-                startYearSelect.appendChild(option.cloneNode(true));
-                endYearSelect.appendChild(option);
-            }
+        for (let year = startYear; year <= endYear; year++) {
+            let option = document.createElement("option");
+            option.value = year;
+            option.text = year;
+            startYearSelect.appendChild(option.cloneNode(true));
+            endYearSelect.appendChild(option);
         }
+    }
 
-        // Populate the year dropdowns from 2000 to the current year + 10
-        document.addEventListener("DOMContentLoaded", function() {
-            const currentYear = new Date().getFullYear();
-            populateYearDropdowns('startYear', 'endYear', 2010, currentYear + 10);
-        });
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentYear = new Date().getFullYear();
+        populateYearDropdowns('startYear', 'endYear', 2010, currentYear + 10);
+    });
 </script>
 </main>
 

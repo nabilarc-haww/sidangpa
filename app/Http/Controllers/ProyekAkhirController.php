@@ -11,28 +11,47 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str; 
 use PDF;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ProyekAkhirExport;
 
 class ProyekAkhirController extends Controller
 {
-   
-    public function getData($id_header)
+    public function dosenDropdownfilter()
     {
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-            'Authorization' => 'Bearer ' . $this->supabaseApiKey,  
-            // Tambahkan header Authorization jika diperlukan
+        ])->get($this->supabaseUrl . '/rest/v1/dosen?select=*');
+
+        if ($response->failed()) {
+            return response()->json(['error' => 'Failed to retrieve data from API'], 500);
+        }
+
+        return $response->json();
+    }
+   
+    public function getData(Request $request, $id_header)
+    {
+        // Fetch dosen data for dropdown
+        $dosenList = $this->dosenDropdownfilter();
+    
+        // Existing code to fetch proyek_akhir data
+        $dosen_pembimbing1 = $request->query('dosen_pembimbing1');
+        $penguji_1 = $request->query('penguji_1');
+        $penguji_2 = $request->query('penguji_2');
+    
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+            'Authorization' => 'Bearer ' . $this->supabaseApiKey,
         ])->get($this->supabaseUrl . '/rest/v1/header', [
             'id_header' => 'eq.' . $id_header,
-            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*),penguji_1(*),penguji_2(*))'
+            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*,riset_group(*)),penguji_1(*),penguji_2(*))'
         ]);
-
+    
         $proyek_akhir = $response->json();
     
-        // Initialize array to store the final result
         $finalResult = [];
     
         foreach ($proyek_akhir as $header) {
-            // Prepare the basic structure of each header entry
             $headerEntry = [
                 'created_at' => $header['created_at'],
                 'judul' => $header['judul'],
@@ -40,44 +59,53 @@ class ProyekAkhirController extends Controller
                 'tanggal' => $header['tanggal'],
                 'waktu'=> $header['waktu'],
                 'tahapan_sidang' => $header['tahapan_sidang'],
+                'tahun_ajaran' => $header['tahun_ajaran'],
                 'id_header' => $header['id_header'],
                 'data_generate' => []
             ];
     
-            // Group the data_generate entries by id_ruang within each header
             $groupedData = [];
     
             if (isset($header['data_generate'])) {
                 foreach ($header['data_generate'] as $data) {
                     $idRuang = $data['id_ruang']['id_ruang'];
-                    if (!isset($groupedData[$idRuang])) {
-                        $groupedData[$idRuang] = [
-                            'id_ruang' => $idRuang,
-                            'nama_ruang' => $data['id_ruang']['nama_ruang'],
-                            'kode_ruang' => $data['id_ruang']['kode_ruang'],
-                            'letak' => $data['id_ruang']['letak'],
-                            'data_generate' => []
-                        ];
+                    $addData = true;
+    
+                    if ($dosen_pembimbing1 && $data['id_mhs']['dosen_pembimbing1']['nama_dosen'] != $dosen_pembimbing1) {
+                        $addData = false;
                     }
-                    $groupedData[$idRuang]['data_generate'][] = $data;
+    
+                    if ($penguji_1 && (!isset($data['penguji_1']['nama_dosen']) || $data['penguji_1']['nama_dosen'] != $penguji_1)) {
+                        $addData = false;
+                    }
+    
+                    if ($penguji_2 && (!isset($data['penguji_2']['nama_dosen']) || $data['penguji_2']['nama_dosen'] != $penguji_2)) {
+                        $addData = false;
+                    }
+    
+                    if ($addData) {
+                        if (!isset($groupedData[$idRuang])) {
+                            $groupedData[$idRuang] = [
+                                'id_ruang' => $idRuang,
+                                'nama_ruang' => $data['id_ruang']['nama_ruang'],
+                                'kode_ruang' => $data['id_ruang']['kode_ruang'],
+                                'letak' => $data['id_ruang']['letak'],
+                                'riset_group' => $data['id_ruang']['riset_group']['riset_group'],
+                                'data_generate' => []
+                            ];
+                        }
+                        $groupedData[$idRuang]['data_generate'][] = $data;
+                    }
                 }
             }
     
-            // Convert groupedData to a numerically indexed array and add to headerEntry
             $headerEntry['data_generate'] = array_values($groupedData);
-    
-            // Add the prepared headerEntry to the final result
             $finalResult[] = $headerEntry;
         }
     
-        // For debugging purpose, dump the grouped data
-        response()->json($finalResult);
-
-        return view('generate', compact('finalResult', 'id_header'));
-    
-        // Return view with the grouped data
-        // return view('generate', compact('groupedData'));
+        return view('generate', compact('finalResult', 'id_header', 'dosenList'));
     }
+
 
     public function import(Request $request)
     {
@@ -299,16 +327,32 @@ class ProyekAkhirController extends Controller
         return redirect('/proyek-akhir/generate-hasil/'.$id_header)->with('success', 'Data header berhasil disimpan.');
     }
     
-    public function getDataGenerate()
+    public function getDataGenerate(Request $request)
     {
+        $tahunAjaran = $request->input('tahun_ajaran');
 
+        // Base URL untuk API
+        $url = $this->supabaseUrl . '/rest/v1/header?select=*&order=created_at.desc';
+
+        // Jika ada tahun ajaran, tambahkan query parameter untuk filter
+        if ($tahunAjaran) {
+            $url .= '&tahun_ajaran=eq.' . $tahunAjaran;
+        }
+
+        // Ambil data dari API
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-        ])->get($this->supabaseUrl . '/rest/v1/header?select=*&order=created_at.desc');
+        ])->get($url);
         
         $headers = $response->json();
-        return view('card', compact('headers'));
+
+        // Mengambil data tahun ajaran unik untuk dropdown
+        $tahunAjaranList = collect($headers)->pluck('tahun_ajaran')->unique()->sort();
+
+        return view('card', compact('headers', 'tahunAjaranList'));
     }
+
+
 
     public function edit($id_jadwal_generate)
     {
@@ -377,7 +421,7 @@ class ProyekAkhirController extends Controller
             'apikey' => $this->supabaseApiKey,
         ])->get($this->supabaseUrl . '/rest/v1/header', [
             'id_header' => 'eq.' . $id_header,
-            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*),penguji_1(*),penguji_2(*))'
+            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*,riset_group(*)),penguji_1(*),penguji_2(*))'
         ]);
 
         $proyek_akhir = $response->json();
@@ -395,6 +439,7 @@ class ProyekAkhirController extends Controller
                 'waktu'=> $header['waktu'],
                 'tahapan_sidang' => $header['tahapan_sidang'],
                 'id_header' => $header['id_header'],
+                'tahun_ajaran' => $header['tahun_ajaran'],
                 'data_generate' => []
             ];
 
@@ -410,6 +455,7 @@ class ProyekAkhirController extends Controller
                             'nama_ruang' => $data['id_ruang']['nama_ruang'],
                             'kode_ruang' => $data['id_ruang']['kode_ruang'],
                             'letak' => $data['id_ruang']['letak'],
+                            'riset_group' => $data['id_ruang']['riset_group']['riset_group'],
                             'data_generate' => []
                         ];
                     }
@@ -424,9 +470,60 @@ class ProyekAkhirController extends Controller
             $finalResult[] = $headerEntry;
         }
 
-        $pdf = PDF::loadView('generate-pdf', compact('finalResult'));
+        $pdf = PDF::loadView('export-generate', compact('finalResult'));
 
         return $pdf->download('jadwal_sidang.pdf');
     }
-    
+
+    public function downloadExcel($id_header)
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/header', [
+            'id_header' => 'eq.' . $id_header,
+            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*,riset_group(*)),penguji_1(*),penguji_2(*))'
+        ]);
+
+        $proyek_akhir = $response->json();
+
+        $finalResult = [];
+
+        foreach ($proyek_akhir as $header) {
+            $headerEntry = [
+                'created_at' => $header['created_at'],
+                'judul' => $header['judul'],
+                'prodi' => $header['prodi'],
+                'tanggal' => $header['tanggal'],
+                'waktu'=> $header['waktu'],
+                'tahapan_sidang' => $header['tahapan_sidang'],
+                'id_header' => $header['id_header'],
+                'tahun_ajaran' => $header['tahun_ajaran'],
+                'data_generate' => []
+            ];
+
+            $groupedData = [];
+
+            if (isset($header['data_generate'])) {
+                foreach ($header['data_generate'] as $data) {
+                    $idRuang = $data['id_ruang']['id_ruang'];
+                    if (!isset($groupedData[$idRuang])) {
+                        $groupedData[$idRuang] = [
+                            'id_ruang' => $idRuang,
+                            'nama_ruang' => $data['id_ruang']['nama_ruang'],
+                            'kode_ruang' => $data['id_ruang']['kode_ruang'],
+                            'letak' => $data['id_ruang']['letak'],
+                            'riset_group' => $data['id_ruang']['riset_group']['riset_group'],
+                            'data_generate' => []
+                        ];
+                    }
+                    $groupedData[$idRuang]['data_generate'][] = $data;
+                }
+            }
+
+            $headerEntry['data_generate'] = array_values($groupedData);
+            $finalResult[] = $headerEntry;
+        }
+
+        return Excel::download(new ProyekAkhirExport($finalResult), 'jadwal_sidang.xlsx');
+    }
 }

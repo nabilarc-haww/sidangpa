@@ -20,25 +20,15 @@
     </div>
     <div class="col" style="padding-left: 500px; padding-top: 10px;">
       <div class="row">
-        <div class="col dropdown">
-          <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dosen
-          </button>
-          <ul class="dropdown-menu">
-            <li><button class="dropdown-item" type="button">Action</button></li>
-            <li><button class="dropdown-item" type="button">Another action</button></li>
-            <li><button class="dropdown-item" type="button">Something else here</button></li>
-          </ul>
-        </div>
-        <div class="col dropdown">
-          <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Tahun Ajaran
-          </button>
-          <ul class="dropdown-menu">
-            <li><button class="dropdown-item" type="button">Action</button></li>
-            <li><button class="dropdown-item" type="button">Another action</button></li>
-            <li><button class="dropdown-item" type="button">Something else here</button></li>
-          </ul>
+        <div class="col-12 dropdown">
+          <form action="{{ url('/hasil-proyek-akhir') }}" method="GET">
+            <select name="tahun_ajaran" class="form-select btn btn-warning" aria-expanded="false" onchange="this.form.submit()">
+              <option value="">Pilih Tahun Ajaran</option>
+              @foreach($tahunAjaranList as $tahunAjaran)
+                <option value="{{ $tahunAjaran }}">{{ $tahunAjaran }}</option>
+              @endforeach
+            </select>
+          </form>
         </div>
       </div>
     </div>
@@ -54,6 +44,14 @@
             <i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($header['created_at'])->locale('id')->isoFormat('DD MMMM YYYY') }}
             </small>
             <h4 class="card-title m-0 py-3">{{ $header['judul'] }}</h4>
+            <div class="row mb-2">
+              <div class="col-4">
+                <strong>Tahun Ajaran</strong>
+              </div>
+              <div class="col-8">
+                : {{ $header['tahun_ajaran'] ?? "-" }}
+              </div>
+            </div>
             <div class="row mb-2">
               <div class="col-4">
                 <strong>Jurusan</strong>
@@ -80,7 +78,7 @@
               </div>
             </div>
             <div class="d-flex justify-content-end mt-2">
-             <a href="{{ url('/proyek-akhir/download-pdf/'.$header['id_header']) }}" class="btn btn-success me-2" style="background-color: #04BC00;border: none; font-size: 14px;">Download</a>
+            <button class="btn btn-success me-2" style="background-color: #04BC00; border: none; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#downloadModal" data-id="{{ $header['id_header'] }}">Download</button>
               <a href="{{ url('/proyek-akhir/generate-hasil/'.$header['id_header'])  }}" class="btn btn-primary" style="font-size: 14px;">Lihat Hasil</a>
             </div>
           </div>     
@@ -89,8 +87,28 @@
       </div>                
     </div>
   </section>
-
-</main><!-- End #main -->
+  <!-- Modal -->
+  <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="downloadModalLabel">Download File</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Pilih format file yang ingin diunduh:</p>
+          <div class="d-grid gap-2">
+            <a href="#" id="downloadPDF" class="btn btn-success">Download sebagai PDF</a>
+            <a href="#" id="downloadExcel" class="btn btn-primary">Download sebagai Excel</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
 
 @include('footer')
 
@@ -98,3 +116,19 @@
 </body>
 
 </html>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var downloadModal = document.getElementById('downloadModal');
+    downloadModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var idHeader = button.getAttribute('data-id');
+      
+      var downloadPDF = document.getElementById('downloadPDF');
+      var downloadExcel = document.getElementById('downloadExcel');
+      
+      downloadPDF.href = '/proyek-akhir/download-pdf/' + idHeader;
+      downloadExcel.href = '/proyek-akhir/download-excel/' + idHeader;
+    });
+  });
+</script>

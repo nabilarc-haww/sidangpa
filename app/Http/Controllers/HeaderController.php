@@ -14,8 +14,13 @@ class HeaderController extends Controller
             'prodi' => 'required|string',
             'tanggal' => 'required|date',
             'tahapan_sidang' => 'required|string',
-            'waktu' => ['required', 'regex:/^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/']
+            'waktu' => ['required', 'regex:/^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/'],
+            'start_year' => 'required|integer',
+            'end_year' => 'required|integer|gte:start_year'
         ]);
+
+        // Menggabungkan start_year dan end_year menjadi tahun_ajaran
+        $tahun_ajaran = $request->start_year . ' / ' . $request->end_year;
 
         $headerData = [
             'judul' => $request->judul,
@@ -23,6 +28,7 @@ class HeaderController extends Controller
             'tanggal' => $request->tanggal,
             'tahapan_sidang' => $request->tahapan_sidang,
             'waktu' => $request->waktu,
+            'tahun_ajaran' => $tahun_ajaran,
         ];
 
         $id_header = DB::table('public.header')
@@ -31,8 +37,5 @@ class HeaderController extends Controller
         session(['id_header' => $id_header]);
 
         return redirect('/proyek-akhir/jadwal')->with('success', 'Data header berhasil disimpan.');
-
-        // return redirect()->route('proyek-akhir.generate', ['id_header' => $id_header])
-        //                  ->with('success', 'Data header berhasil disimpan.');
     }
 }

@@ -29,14 +29,17 @@
         <p style="text-align: center;">Tanggal: {{ \Carbon\Carbon::parse($header['tanggal'])->locale('id')->isoFormat('DD MMMM YYYY') }}</p>
         <p style="text-align: center;">Jam: {{ $header['waktu'] }} - Selesai</p>
         <p style="text-align: center;">Tahapan Sidang: {{ $header['tahapan_sidang'] }}</p>
+        <p style="text-align: center;">Tahun Ajaran: {{ $header['tahun_ajaran'] ?? "-" }}</p>
 
         @foreach($header['data_generate'] as $ruang)
+         <div class="highlight mt-3 mb-1">{{ $ruang['riset_group'] }}</div>
             <h5>{{ $ruang['nama_ruang'] }} ({{ $ruang['kode_ruang'] }} - {{ $ruang['letak'] }})</h5>
             <table>
                 <thead>
                     <tr>
+                        <th>NRP</th>
                         <th>Nama Mahasiswa</th>
-                        <th>Judul</th>
+                        <th>Judul PA</th>
                         <th>Pembimbing 1</th>
                         <th>Pembimbing 2</th>
                         <th>Pembimbing 3</th>
@@ -47,6 +50,7 @@
                 <tbody>
                     @foreach($ruang['data_generate'] as $data)
                         <tr>
+                            <td>{{ $data['id_mhs']['nrp_mahasiswa'] }}</td>
                             <td>{{ $data['id_mhs']['nama_mahasiswa'] }}</td>
                             <td>{{ $data['id_mhs']['judul_pa'] }}</td>
                             <td>{{ $data['id_mhs']['dosen_pembimbing1']['nama_dosen'] }}</td>
