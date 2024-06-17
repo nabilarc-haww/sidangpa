@@ -241,10 +241,12 @@ class ProyekAkhirController extends Controller
                 $mahasiswa['nama_dosen_pembimbing2'] = $dosenMap[$dosenPembimbing2] ?? null;
                 $mahasiswa['nama_dosen_pembimbing3'] = $dosenMap[$dosenPembimbing3] ?? null;
     
+                // Filter dosen available to be penguji
                 $availableDosen = array_filter($dosenList, function($dosen) use ($dosenPembimbing1, $dosenPembimbing2, $dosenPembimbing3) {
                     return $dosen['id_dosen'] !== $dosenPembimbing1
                         && $dosen['id_dosen'] !== $dosenPembimbing2
-                        && $dosen['id_dosen'] !== $dosenPembimbing3;
+                        && $dosen['id_dosen'] !== $dosenPembimbing3
+                        && $dosen['available']; // Only include dosen who are available
                 });
     
                 $availableDosen = array_values($availableDosen); // Re-index the array
@@ -297,6 +299,7 @@ class ProyekAkhirController extends Controller
             // Assign updated rooms back to the riset_group
             $group['riset_group']['ruang'] = $rooms;
         }
+    
         // Create the new response array with only the required fields
         $response = [];
         foreach ($groupedData as $group) {
