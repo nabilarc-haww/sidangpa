@@ -27,7 +27,14 @@ Route::get('/proyek-akhir/download-excel/{id_header}', [App\Http\Controllers\Pro
 Route::get('/proyek-akhir/jadwal',function () {
     return view('jadwal');
 });
+
 Route::get('/riset-group', [RisetGroupController::class, 'getAllData']);
+Route::get('/riset-group/edit/{id}', [RisetGroupController::class, 'edit'])->name('riset-group.editDosen');
+Route::patch('/riset-group/update/{id}', [RisetGroupController::class, 'update'])->name('riset-group.updateDosen');
+Route::delete('/riset-group/delete/{id}', [RisetGroupController::class, 'destroy'])->name('riset-group.deleteDosen');
+Route::get('/riset-group/create', [RisetGroupController::class, 'create'])->name('riset-group.create');
+Route::post('/riset-group', [RisetGroupController::class, 'store'])->name('riset-group.store');
+
 Route::get('/pengumuman',function () {
     return view('announce/announce');
 });
