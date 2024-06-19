@@ -19,7 +19,6 @@
 </div>
 @endif
 
-
   <div class="pagetitle">
     <h1>Penjadwalan Sidang</h1>
     <nav>
@@ -49,60 +48,36 @@
                   <th>Nama Riset Group</th>
                   <th>NIP</th>
                   <th>Nama Dosen</th>
-                  <th>Dosen psdku</th>
+                  <th>Dosen PSDku</th>
                   <th>Available</th>
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody class="row">
+              <tbody>
                 @foreach($riset_group as $item)
-                <tr>
-                  <td class="col-1">{{ $item['riset_group'] }}</td>
-                  <td>
-                    @foreach ($item['dosen'] as $dosen)
-                    {{ $dosen['nip'] }} <br>
-                    @endforeach
-                </td>
-                <td>
-                    @foreach ($item['dosen'] as $dosen)
-                    {{ $dosen['nama_dosen'] }}<br>
-                    @endforeach
-                </td>
-                <td>
-                  @foreach ($item['dosen'] as $dosen)
-                      @if ($dosen['psdku'])
-                        Ya
-                      @else
-                        Tidak
-                      @endif
-                      <br>
-                  @endforeach
-                </td>
-                <td>
-                  @foreach ($item['dosen'] as $dosen)
-                    @if ($dosen['available'])
-                      Ya
-                    @else
-                      Tidak
+                  @foreach ($item['dosen'] as $index => $dosen)
+                  <tr>
+                    @if ($index == 0)
+                    <td rowspan="{{ count($item['dosen']) }}">{{ $item['riset_group'] }}</td>
                     @endif
-                    <br>
+                    <td>{{ $dosen['nip'] }}</td>
+                    <td>{{ $dosen['nama_dosen'] }}</td>
+                    <td>{{ $dosen['psdku'] ? 'Ya' : 'Tidak' }}</td>
+                    <td>{{ $dosen['available'] ? 'Ya' : 'Tidak' }}</td>
+                    <td>
+                      <div class="d-flex">
+                        <form action="{{ route('riset-group.editDosen', $dosen['id_dosen']) }}" method="GET" class="me-2">
+                          <button type="submit" class="btn btn-primary btn-sm">Edit</button>
+                        </form>
+                        <form action="{{ route('riset-group.deleteDosen', $dosen['id_dosen']) }}" method="POST">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
                   @endforeach
-                </td>
-                <td>
-                  @foreach ($item['dosen'] as $dosen)
-                  <div class="d-flex">
-                    <form action="{{ route('riset-group.editDosen', $dosen['id_dosen']) }}" method="GET" class="me-2">
-                      <button type="submit" class="btn btn-primary btn-sm">Edit</button>
-                    </form>
-                    <form action="{{ route('riset-group.deleteDosen', $dosen['id_dosen']) }}" method="POST" style="display: inline-block;">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                  </div>
-                  @endforeach
-                </td>
-                </tr>
                 @endforeach
               </tbody>
             </table>

@@ -25,7 +25,7 @@
               <p class="card-text">{!! nl2br(e($pengumuman[0]['deskripsi'])) !!}</p>
               
               @if(isset($pengumuman[0]['attachment']) && count($pengumuman[0]['attachment']) > 0)
-                <h5 class="card-title">Attachments:</h5>
+                <h5 class="card-title">Lampiran:</h5>
                 <ul>
                   @foreach($pengumuman[0]['attachment'] as $attachment)
                     <li><a href="{{ $attachment['path'] }}" target="_blank">{{ $attachment['nama_file'] }}</a></li>
