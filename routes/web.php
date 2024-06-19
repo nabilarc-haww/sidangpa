@@ -61,8 +61,11 @@ Route::get('/proyek-akhir/data/edit/{id}', [DataProyekAkhirController::class, 's
 Route::post('/proyek-akhir/data/update/{id}', [DataProyekAkhirController::class, 'updateDataProyek'])->name('proyek-akhir.data.updateDataProyek');
 Route::delete('/proyek-akhir/data/delete/{id}', [DataProyekAkhirController::class, 'deleteDataProyek'])->name('proyek-akhir.data.deleteDataProyek');
 Route::get('/proyek-akhir/data/tambah_pa/{id_master}', [DataProyekAkhirController::class, 'dosenDropdown'])->name('proyek-akhir.data.tambah_pa');
-Route::get('/proyek-akhir',[DataProyekAkhirController::class, 'getDataMasterPA']);
+Route::get('/proyek-akhir', [DataProyekAkhirController::class, 'getDataMasterPA'])->name('proyek-akhir.data.filter');
 Route::get('/proyek-akhir/form', [DataProyekAkhirController::class, 'showForm']);
+Route::get('/proyek-akhir/export/{id_master}', [DataProyekAkhirController::class, 'exportDataProyek'])->name('proyek-akhir.data.export');
+Route::get('/proyek-akhir/data/{id_master}/filter', [DataProyekAkhirController::class, 'filterByDosen'])->name('proyek-akhir.data.filterByDosen');
+
 
 Route::get('/register',function () {
     return view('user/register');

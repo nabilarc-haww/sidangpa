@@ -1,4 +1,3 @@
-<html>
 @extends('main')
 
 <body>
@@ -9,13 +8,12 @@
 @if(session('success'))
     <script>
         $(document).ready(function(){
-            // Show success modal here
             $('#successModal').modal('show');
         });
     </script>
 @endif
 
-<!-- Modal -->
+<!-- Success Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -33,7 +31,24 @@
     </div>
 </div>
 
-  <div class="row">
+<!-- Download Modal -->
+<div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="downloadModalLabel">Download File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Pilih format file untuk didownload:</p>
+                <a href="#" id="downloadExcel" class="btn btn-success">Download Excel</a>
+                <a href="#" id="downloadCsv" class="btn btn-primary">Download CSV</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
     <div class="col">
         <div class="pagetitle">
             <h1>Proyek Akhir</h1>
@@ -47,67 +62,84 @@
         </div><!-- End Page Title -->
     </div>
     <div class="col" style="padding-left: 500px; padding-top: 10px;">
-      <div class="row">
-        <div class="col dropdown">
-          <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Program Studi
-          </button>
-          <ul class="dropdown-menu">
-            <li><button class="dropdown-item" type="button">Action</button></li>
-            <li><button class="dropdown-item" type="button">Another action</button></li>
-            <li><button class="dropdown-item" type="button">Something else here</button></li>
-          </ul>
-        </div>
-        <div class="col dropdown">
-          <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Tahun Ajaran
-          </button>
-          <ul class="dropdown-menu">
-            <li><button class="dropdown-item" type="button">Action</button></li>
-            <li><button class="dropdown-item" type="button">Another action</button></li>
-            <li><button class="dropdown-item" type="button">Something else here</button></li>
-          </ul>
-        </div>
-      </div>
+        <form method="GET" action="{{ route('proyek-akhir.data.filter') }}">
+            <div class="row">
+                <div class="col dropdown">
+                    <select class="form-select" name="program_studi">
+                        <option value="">Program Studi</option>
+                        @foreach($program_studi_list as $ps)
+                            <option value="{{ $ps }}" {{ request('program_studi') == $ps ? 'selected' : '' }}>{{ $ps }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col dropdown">
+                    <select class="form-select" name="tahun_ajaran">
+                        <option value="">Tahun Ajaran</option>
+                        @foreach($tahun_ajaran_list as $ta)
+                            <option value="{{ $ta }}" {{ request('tahun_ajaran') == $ta ? 'selected' : '' }}>{{ $ta }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </div>
+        </form>
     </div>
-  </div>
+</div>
 
-  <section class="section">
-        <div class="container">
-          <div class="row g-2">
+<section class="section">
+    <div class="container">
+        <div class="row g-2">
             @foreach($master_pa as $data)
-              <div class="col-6">
-                <div class="card card-body">
-                  <small class="text-muted mt-3" style="font-size: 12px">
-                      <i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($data['created_at'])->locale('id')->isoFormat('DD MMMM YYYY') }}
-                  </small>
-                  <h4 class="card-title m-0 py-3">{{ $data['jurusan'] }}</h4>
-                  <div class="row mb-2">
-                      <div class="col-4">
-                          <strong>Tahun Ajaran</strong>
-                      </div>
-                      <div class="col-8">
-                          : {{ $data['tahun_ajaran'] }}
-                      </div>
-                  </div>
-                  <div class="d-flex justify-content-end mt-2">
-                      <button class="btn btn-success me-2" style="background-color: #04BC00;border: none; font-size: 14px;">Download</button>
-                      <a href="{{ url('/proyek-akhir/data/'.$data['id_master'])  }}" class="btn btn-primary" style="font-size: 14px;">Lihat Hasil</a>
-                      <!-- <button class="btn btn-primary" style="font-size: 14px;">Lihat Data</button> -->
-                  </div>
-              </div>     
-          </div>
-      @endforeach
-
+                <div class="col-6">
+                    <div class="card card-body">
+                        <small class="text-muted mt-3" style="font-size: 12px">
+                            <i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($data['created_at'])->locale('id')->isoFormat('DD MMMM YYYY') }}
+                        </small>
+                        <h4 class="card-title m-0 py-3">{{ $data['jurusan'] }}</h4>
+                        <div class="row mb-2">
+                            <div class="col-4">
+                                <strong>Tahun Ajaran</strong>
+                            </div>
+                            <div class="col-8">
+                                : {{ $data['tahun_ajaran'] }}
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="button" class="btn btn-success me-2" style="background-color: #04BC00; border: none; font-size: 14px;"  data-bs-toggle="modal" data-bs-target="#downloadModal" 
+                                    data-id-master="{{ $data['id_master'] }}">
+                                Download
+                            </button>
+                            <a href="{{ url('/proyek-akhir/data/'.$data['id_master'])  }}" class="btn btn-primary" style="font-size: 14px;">Lihat Hasil</a>
+                        </div>
+                    </div>     
+                </div>
+            @endforeach
+        </div>
     </div>
-  </section>
-
+</section>
 </main><!-- End #main -->
 
 @include('footer')
 
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-</body>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var downloadModal = document.getElementById('downloadModal');
+    downloadModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var idMaster = button.getAttribute('data-id-master');
 
+        var downloadExcel = document.getElementById('downloadExcel');
+        var downloadCsv = document.getElementById('downloadCsv');
+
+        downloadExcel.href = '/proyek-akhir/export/' + idMaster + '?format=excel';
+        downloadCsv.href = '/proyek-akhir/export/' + idMaster + '?format=csv';
+    });
+});
+</script>
+
+</body>
 </html>

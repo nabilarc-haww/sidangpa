@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ProyekAkhirExportMahasiswa;
 
 class DataProyekAkhirController extends Controller
 {
@@ -19,7 +21,65 @@ class DataProyekAkhirController extends Controller
 
         $data_pa = $response->json();
 
-        return view('proyek_akhir/public_pa', compact('data_pa', 'id_master'));
+        // dd($data_pa);
+
+        $dosenResponse = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/dosen?select=*');
+
+        $dosen = $dosenResponse->json();
+
+        return view('proyek_akhir/public_pa', compact('data_pa', 'id_master', 'dosen'));
+    }
+
+
+    public function filterByDosen(Request $request, $id_master)
+    {
+        $id_dosen = $request->query('id_dosen');
+
+        // Get filtered projects
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/proyek_akhir', [
+            'id_master' => 'eq.' . $id_master,
+            'select' => '*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)',
+            'or' => sprintf('(dosen_pembimbing1.eq.%s,dosen_pembimbing2.eq.%s,dosen_pembimbing3.eq.%s)', $id_dosen, $id_dosen, $id_dosen)
+        ]);
+
+        $filtered_projects = $response->json();
+
+        // Get master project data
+        $masterResponse = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/master_pa', [
+            'id_master' => 'eq.' . $id_master,
+            'select' => 'id_master, created_at, tahun_ajaran, jurusan'
+        ]);
+
+        $masterData = $masterResponse->json();
+
+        // Assuming $masterData contains only one entry as it is queried by id_master
+        if (!empty($masterData) && isset($masterData[0])) {
+            $masterData = $masterData[0];
+            $masterData['proyek_akhir'] = $filtered_projects; // Attach filtered projects
+        } else {
+            $masterData = [
+                'id_master' => $id_master,
+                'created_at' => null,
+                'tahun_ajaran' => null,
+                'jurusan' => null,
+                'proyek_akhir' => $filtered_projects
+            ];
+        }
+
+        // Get dosen data
+        $dosenResponse = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/dosen?select=*');
+
+        $dosen = $dosenResponse->json();
+
+        return view('proyek_akhir/public_pa', ['data_pa' => [$masterData], 'id_master' => $id_master, 'dosen' => $dosen]);
     }
 
     public function tambahDataProyek(Request $request, $id_master)
@@ -113,14 +173,56 @@ class DataProyekAkhirController extends Controller
         return view('proyek_akhir/tambah_pa', compact('dosen', 'id_master'));
     }
 
-    public function getDataMasterPA()
+    public function getDataMasterPA(Request $request)
     {
+        $program_studi = $request->query('program_studi');
+        $tahun_ajaran = $request->query('tahun_ajaran');
+
+        // Build query parameters
+        $queryParams = [
+            'select' => '*,proyek_akhir(*)'
+        ];
+
+        if ($program_studi) {
+            $queryParams['jurusan'] = 'eq.' . $program_studi;
+        }
+
+        if ($tahun_ajaran) {
+            $queryParams['tahun_ajaran'] = 'eq.' . $tahun_ajaran;
+        }
+
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-        ])->get($this->supabaseUrl . '/rest/v1/master_pa?select=*,proyek_akhir(*)');
+        ])->get($this->supabaseUrl . '/rest/v1/master_pa', $queryParams);
 
         $master_pa = $response->json();
 
-        return view('proyek_akhir/card_pa', compact('master_pa'));
+        // Get the list of program studi and tahun ajaran for the filters
+        $program_studi_list = DB::table('public.master_pa')->select('jurusan')->distinct()->pluck('jurusan');
+        $tahun_ajaran_list = DB::table('public.master_pa')->select('tahun_ajaran')->distinct()->pluck('tahun_ajaran');
+
+        return view('proyek_akhir/card_pa', compact('master_pa', 'program_studi_list', 'tahun_ajaran_list'));
+    }
+
+
+
+    public function exportDataProyek(Request $request, $id_master)
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/master_pa', [
+            'id_master' => 'eq.' . $id_master,
+            'select' => '*,proyek_akhir(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*))'
+        ]);
+
+        $data_pa = $response->json();
+
+        $format = $request->query('format', 'xlsx');
+
+        if ($format == 'csv') {
+            return Excel::download(new ProyekAkhirExportMahasiswa($data_pa), 'data_proyek_akhir.csv', \Maatwebsite\Excel\Excel::CSV);
+        } else {
+            return Excel::download(new ProyekAkhirExportMahasiswa($data_pa), 'data_proyek_akhir.xlsx');
+        }
     }
 }
