@@ -52,9 +52,8 @@ Route::get('/pengumuman/tambah',function () {
 Route::get('/pengumuman/public',function () {
     return view('announce/public');
 });
-Route::get('/pengumuman/public/detail',function () {
-    return view('announce/detail_public');
-});
+Route::get('/pengumuman/public/detail/{id}', [PengumumanController::class, 'showDetail'])->name('pengumuman.showDetail');
+
 Route::get('/proyek-akhir/data/{id_master}', [DataProyekAkhirController::class, 'getDataProyek'])->name('proyek-akhir.data');
 Route::post('/proyek-akhir/data/tambah/{id_master}', [DataProyekAkhirController::class, 'tambahDataProyek'])->name('proyek-akhir.data.tambahDataProyek');
 Route::get('/proyek-akhir/data/edit/{id}', [DataProyekAkhirController::class, 'showEditForm'])->name('proyek-akhir.data.editDataProyek');

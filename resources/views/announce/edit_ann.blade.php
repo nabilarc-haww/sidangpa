@@ -35,12 +35,12 @@
                           <input type="text" class="form-control" id="judul_pengumuman" name="judul_pengumuman" value="{{ $pengumuman[0]['judul_pengumuman'] }}">
                         </div>
                         <div class="col-md-6">
-                          <label for="cover" class="form-label">Cover</label>
-                          <input type="file" class="form-control" id="cover" name="cover">
+                          <label for="gambar" class="form-label">gambar</label>
+                          <input type="file" class="form-control" id="gambar" name="gambar">
                           @if(isset($pengumuman[0]['attachment']))
                             @foreach($pengumuman[0]['attachment'] as $attachment)
-                              @if($attachment['attachment_type'] == 'file_cover')
-                                <img src="{{ $attachment['path'] }}" alt="Cover Image" style="width: 100px; height: auto;">
+                              @if($attachment['attachment_type'] == 'file_gambar')
+                                <img src="{{ $attachment['path'] }}" alt="gambar Image" style="width: 100px; height: auto;">
                               @endif
                             @endforeach
                           @endif

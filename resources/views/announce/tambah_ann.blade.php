@@ -34,8 +34,8 @@
                           <input type="text" class="form-control" id="judul_pengumuman" name="judul_pengumuman" required>
                         </div>
                         <div class="col-md-6">
-                          <label for="cover" class="form-label">Cover</label>
-                          <input type="file" class="form-control" id="cover" name="cover">
+                          <label for="gambar" class="form-label">gambar</label>
+                          <input type="file" class="form-control" id="gambar" name="gambar">
                         </div>
                       </div>
                       <div class="row">

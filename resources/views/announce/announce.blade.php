@@ -6,6 +6,18 @@
 @include('sidebar')
 
 <main id="main" class="main">
+  @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <div class="pagetitle">
         <h1>Pengumuman</h1>
@@ -53,7 +65,7 @@
                                   <th>Judul Pengumuman</th>
                                   <th>Deskripsi</th>
                                   <th>Status</th>
-                                  <th>Cover</th>
+                                  <th>Gambar</th>
                                   <th>File Lampiran</th>
                                   <th>Aksi</th>
                                 </tr>
@@ -67,8 +79,8 @@
                                   <td>{{ $item['status'] }}</td>
                                   <td>
                                     @foreach($item['attachment'] as $attachment)
-                                      @if($attachment['attachment_type'] == 'file_cover')
-                                        <img src="{{ $attachment['path'] }}" alt="Cover Image" style="width: 100px; height: auto;">
+                                      @if($attachment['attachment_type'] == 'file_gambar')
+                                        <img src="{{ $attachment['path'] }}" alt="gambar Image" style="width: 100px; height: auto;">
                                       @endif
                                     @endforeach
                                   </td>

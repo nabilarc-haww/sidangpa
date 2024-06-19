@@ -20,16 +20,29 @@ class PengumumanController extends Controller
         return view('announce/announce', compact('pengumuman'));
     }
 
+    public function showDetail($id)
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/pengumuman?id_pengumuman=eq.' . $id . '&select=*,attachment(*)');
+
+        $pengumuman = $response->json();
+
+        return view('announce/detail_public', compact('pengumuman'));
+    }
+
     public function getDataAnnounceDashboard()
     {
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-        ])->get($this->supabaseUrl . '/rest/v1/pengumuman?select=*,attachment(*)&order=created_at.desc');
-    
+        ])->get($this->supabaseUrl . '/rest/v1/pengumuman?select=*,attachment(*)&order=created_at.desc&status=eq.publish');
+        
         $pengumuman = $response->json();
-    
+        
         return view('home', compact('pengumuman'));
     }
+
+
     public function tambahPengumuman(Request $request)
     {
         $request->validate([
@@ -48,8 +61,8 @@ class PengumumanController extends Controller
             'status' => $request->status,
         ]);
 
-        if ($request->hasFile('cover')) {
-            $this->uploadAttachment($request->file('cover'), 'file_cover', $id_pengumuman);
+        if ($request->hasFile('gambar')) {
+            $this->uploadAttachment($request->file('gambar'), 'file_gambar', $id_pengumuman);
         }
 
         if ($request->hasFile('lampiran')) {
@@ -115,7 +128,7 @@ class PengumumanController extends Controller
             'judul_pengumuman' => 'required',
             'deskripsi' => 'required',
             'status' => 'required',
-            'cover' => 'file|mimes:jpeg,png,jpg|max:2048',
+            'gambar' => 'file|mimes:jpeg,png,jpg|max:2048',
             'lampiran' => 'file|mimes:pdf,doc,docx|max:5120'
         ]);
 
@@ -127,8 +140,8 @@ class PengumumanController extends Controller
                 'status' => $request->status,
             ]);
 
-        if ($request->hasFile('cover')) {
-            $this->uploadAttachment($request->file('cover'), 'file_cover', $id);
+        if ($request->hasFile('gambar')) {
+            $this->uploadAttachment($request->file('gambar'), 'file_gambar', $id);
         }
 
         if ($request->hasFile('lampiran')) {
@@ -140,9 +153,9 @@ class PengumumanController extends Controller
 
     public function deletePengumuman(Request $request, $id)
     {
-        DB::table('public.pengumuman')->where('id_pengumuman', $id)->delete();
         DB::table('public.attachment')->where('id_pengumuman', $id)->delete();
-
+        DB::table('public.pengumuman')->where('id_pengumuman', $id)->delete();
+        
         return redirect('/pengumuman')->with('success', 'Pengumuman berhasil dihapus.');
     }
 }

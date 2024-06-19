@@ -176,14 +176,14 @@ use Illuminate\Support\Str;
                     <div class="post-item clearfix">
                       @if(isset($item['attachment']) && !empty($item['attachment']))
                         @foreach($item['attachment'] as $attachment)
-                          @if($attachment['attachment_type'] == 'file_cover')
-                            <img src="{{ $attachment['path'] }}" alt="cover" style="width: 100px; height: 100px; margin-right:18px">
+                          @if($attachment['attachment_type'] == 'file_gambar')
+                            <img src="{{ $attachment['path'] }}" alt="gambar" style="width: 100px; height: 100px; margin-right:18px">
                             @break
                           @endif
                         @endforeach
                       @endif
                       <h4><a href="#">{{ $item['judul_pengumuman'] }}</a></h4>
-                      <p>{{ Str::limit($item['deskripsi'], 200) }} @if(Str::length($item['deskripsi']) > 300) <a href="#">Selengkapnya</a> @endif</p>
+                      <p>{{ Str::limit($item['deskripsi'], 200) }} <a href="{{ route('pengumuman.showDetail', $item['id_pengumuman']) }}">Selengkapnya...</a></p>
                     </div>
                   @endif
                 @endforeach
