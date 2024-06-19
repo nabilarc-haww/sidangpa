@@ -26,52 +26,43 @@
                   <div class="card-body p-5">
 
                     <!-- Vertical Form -->
-                    <form method="POST" action="{{ route('pengumuman.tambahPengumuman') }}">
+                    <form method="POST" action="{{ route('pengumuman.tambahPengumuman') }}" enctype="multipart/form-data">
                       @csrf
                       <div class="row">
                         <div class="col-md-6">
                           <label for="judul_pengumuman" class="form-label">Judul Pengumuman</label>
-                          <input type="text" class="form-control" id="judul_pengumuman" name="judul_pengumuman">
+                          <input type="text" class="form-control" id="judul_pengumuman" name="judul_pengumuman" required>
                         </div>
-                        <!-- Tambah input untuk file cover -->
                         <div class="col-md-6">
                           <label for="cover" class="form-label">Cover</label>
                           <input type="file" class="form-control" id="cover" name="cover">
                         </div>
                       </div>
                       <div class="row">
-                        <!-- Tambah input untuk file lampiran -->
                         <div class="col-md-6">
                           <label for="lampiran" class="form-label">Lampiran</label>
                           <input type="file" class="form-control" id="lampiran" name="lampiran">
                         </div>
                         <div class="col-md-6">
                           <label for="deskripsi" class="form-label">Deskripsi</label>
-                          <textarea class="form-control" id="deskripsi" name="deskripsi"></textarea>
+                          <textarea class="form-control" id="deskripsi" name="deskripsi" required></textarea>
                         </div>
                       </div>
                       <div class="row">
                         <div class="col-md-12">
                           <label class="col-form-label pt-0">Status</label>
                           <div class="row ms-4">
-                            <!-- Tambah input untuk status -->
                             <div class="form-check col-2">
                               <input class="form-check-input" type="radio" name="status" id="unpublish" value="unpublish" checked>
-                              <label class="form-check-label" for="unpublish">
-                                Unpublish
-                              </label>
+                              <label class="form-check-label" for="unpublish">Unpublish</label>
                             </div>
                             <div class="form-check col-2">
                               <input class="form-check-input" type="radio" name="status" id="publish" value="publish">
-                              <label class="form-check-label" for="publish">
-                                Publish
-                              </label>
+                              <label class="form-check-label" for="publish">Publish</label>
                             </div>
                             <div class="form-check col-2">
                               <input class="form-check-input" type="radio" name="status" id="draft" value="draft">
-                              <label class="form-check-label" for="draft">
-                                Draft
-                              </label>
+                              <label class="form-check-label" for="draft">Draft</label>
                             </div>
                           </div>
                         </div>

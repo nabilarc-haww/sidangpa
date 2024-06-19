@@ -1,55 +1,111 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Str;
+use GuzzleHttp\Client;
 
 class PengumumanController extends Controller
 {
     public function getDataAnnounce()
     {
-        // Buat request ke Supabase menggunakan HTTP Client
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-        ])->get($this->supabaseUrl . '/rest/v1/pengumuman?select=*');
-
+        ])->get($this->supabaseUrl . '/rest/v1/pengumuman?select=*,attachment(*)&order=created_at.desc');
+    
         $pengumuman = $response->json();
 
         return view('announce/announce', compact('pengumuman'));
-
     }
 
+    public function getDataAnnounceDashboard()
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseApiKey,
+        ])->get($this->supabaseUrl . '/rest/v1/pengumuman?select=*,attachment(*)&order=created_at.desc');
+    
+        $pengumuman = $response->json();
+    
+        return view('home', compact('pengumuman'));
+    }
     public function tambahPengumuman(Request $request)
     {
         $request->validate([
             'judul_pengumuman' => 'required',
             'deskripsi' => 'required',
             'status' => 'required',
+            'lampiran' => 'file|mimes:pdf,doc,docx|max:5120'
         ]);
 
+        $id_pengumuman = Str::uuid();
+
         DB::table('public.pengumuman')->insert([
+            'id_pengumuman' => $id_pengumuman,
             'judul_pengumuman' => $request->judul_pengumuman,
             'deskripsi' => $request->deskripsi,
             'status' => $request->status,
         ]);
 
+        if ($request->hasFile('cover')) {
+            $this->uploadAttachment($request->file('cover'), 'file_cover', $id_pengumuman);
+        }
+
+        if ($request->hasFile('lampiran')) {
+            $this->uploadAttachment($request->file('lampiran'), 'file_lampiran', $id_pengumuman);
+        }
+
         return redirect('/pengumuman')->with('success', 'Pengumuman berhasil ditambahkan.');
+    }
+
+    private function uploadAttachment($file, $attachment_type, $id_pengumuman)
+    {
+        $client = new Client();
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $filePath = $attachment_type . '/' . $fileName;
+        
+        $response = $client->request('POST', $this->supabaseUrl . '/storage/v1/object/attachment/' . $filePath, [
+            'headers' => [
+                'apikey' => $this->supabaseApiKey,
+                'Authorization' => 'Bearer ' . $this->supabaseApiKey,
+            ],
+            'multipart' => [
+                [
+                    'name' => 'file',
+                    'contents' => fopen($file->getPathname(), 'r'),
+                    'filename' => $fileName,
+                    'headers' => [
+                        'Content-Type' => $file->getMimeType(),
+                    ]
+                ],
+            ],
+        ]);
+
+        if ($response->getStatusCode() == 200) {
+            $fileUrl = $this->supabaseUrl . '/storage/v1/object/public/attachment/' . $filePath;
+
+            DB::table('public.attachment')->insert([
+                'nama_file' => $fileName,
+                'file_type' => $file->getClientOriginalExtension(),
+                'size' => $file->getSize(),
+                'path' => $fileUrl,
+                'attachment_type' => $attachment_type,
+                'id_pengumuman' => $id_pengumuman,
+            ]);
+        } else {
+            return back()->withErrors('File upload failed.');
+        }
     }
 
     public function editPengumuman($id)
     {
-        // Mendapatkan data pengumuman berdasarkan ID
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-        ])->get($this->supabaseUrl . '/rest/v1/pengumuman?id_pengumuman=eq.' . $id);
+        ])->get($this->supabaseUrl . '/rest/v1/pengumuman?id_pengumuman=eq.' . $id . '&select=*,attachment(*)');
 
         $pengumuman = $response->json();
 
-        // dd($pengumuman);
-        // Mengirim data pengumuman ke view edit_ann
         return view('announce/edit_ann', compact('pengumuman'));
     }
 
@@ -59,9 +115,10 @@ class PengumumanController extends Controller
             'judul_pengumuman' => 'required',
             'deskripsi' => 'required',
             'status' => 'required',
+            'cover' => 'file|mimes:jpeg,png,jpg|max:2048',
+            'lampiran' => 'file|mimes:pdf,doc,docx|max:5120'
         ]);
 
-        // Update data pengumuman berdasarkan ID
         DB::table('public.pengumuman')
             ->where('id_pengumuman', $id)
             ->update([
@@ -70,15 +127,22 @@ class PengumumanController extends Controller
                 'status' => $request->status,
             ]);
 
+        if ($request->hasFile('cover')) {
+            $this->uploadAttachment($request->file('cover'), 'file_cover', $id);
+        }
+
+        if ($request->hasFile('lampiran')) {
+            $this->uploadAttachment($request->file('lampiran'), 'file_lampiran', $id);
+        }
+
         return redirect('/pengumuman')->with('success', 'Pengumuman berhasil diperbarui.');
     }
 
     public function deletePengumuman(Request $request, $id)
     {
-        // Hapus data pengumuman berdasarkan ID
         DB::table('public.pengumuman')->where('id_pengumuman', $id)->delete();
+        DB::table('public.attachment')->where('id_pengumuman', $id)->delete();
 
         return redirect('/pengumuman')->with('success', 'Pengumuman berhasil dihapus.');
     }
-
 }

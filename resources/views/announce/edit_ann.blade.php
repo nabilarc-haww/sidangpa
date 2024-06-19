@@ -26,7 +26,7 @@
                   <div class="card-body p-5">
       
                     <!-- Vertical Form -->
-                    <form method="POST" action="{{ route('pengumuman.updatePengumuman', $pengumuman[0]['id_pengumuman']) }}">
+                    <form method="POST" action="{{ route('pengumuman.updatePengumuman', $pengumuman[0]['id_pengumuman']) }}" enctype="multipart/form-data">
                       @csrf
                       @method('POST')
                       <div class="row">
@@ -35,17 +35,31 @@
                           <input type="text" class="form-control" id="judul_pengumuman" name="judul_pengumuman" value="{{ $pengumuman[0]['judul_pengumuman'] }}">
                         </div>
                         <div class="col-md-6">
-                          <label for="fileUpload" class="form-label">Cover</label>
-                          <input type="file" class="form-control" id="fileUpload" name="fileUpload">
+                          <label for="cover" class="form-label">Cover</label>
+                          <input type="file" class="form-control" id="cover" name="cover">
+                          @if(isset($pengumuman[0]['attachment']))
+                            @foreach($pengumuman[0]['attachment'] as $attachment)
+                              @if($attachment['attachment_type'] == 'file_cover')
+                                <img src="{{ $attachment['path'] }}" alt="Cover Image" style="width: 100px; height: auto;">
+                              @endif
+                            @endforeach
+                          @endif
                         </div>
                       </div>
                       <div class="row">
                         <div class="col-md-6">
-                          <label for="fileUpload" class="form-label">Lampiran</label>
-                          <input type="file" class="form-control" id="fileUpload" name="fileUpload">
+                          <label for="lampiran" class="form-label">Lampiran</label>
+                          <input type="file" class="form-control" id="lampiran" name="lampiran">
+                          @if(isset($pengumuman[0]['attachment']))
+                            @foreach($pengumuman[0]['attachment'] as $attachment)
+                              @if($attachment['attachment_type'] == 'file_lampiran')
+                                <a href="{{ $attachment['path'] }}" target="_blank">{{ $attachment['nama_file'] }}</a>
+                              @endif
+                            @endforeach
+                          @endif
                         </div>
                         <div class="col-md-6">
-                          <label for="fileUpload" class="form-label">Deskripsi</label>
+                          <label for="deskripsi" class="form-label">Deskripsi</label>
                           <textarea class="form-control" id="deskripsi" name="deskripsi">{{ $pengumuman[0]['deskripsi'] }}</textarea>
                         </div>
                       </div>

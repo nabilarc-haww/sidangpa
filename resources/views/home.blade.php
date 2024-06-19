@@ -1,3 +1,8 @@
+@php
+use Illuminate\Support\Str;
+@endphp
+
+
 @extends('main')
 
 <body>
@@ -162,45 +167,30 @@
                 <li><a class="dropdown-item" href="#">This Year</a></li>
               </ul>
             </div>
-
             <div class="card-body pb-0">
               <h5 class="card-title">News &amp; Updates <span>| Today</span></h5>
 
               <div class="news">
-                <div class="post-item clearfix">
-                  <img src="{{ asset('style/assets/img/news-1.jpg') }}" alt="">
-                  <h4><a href="#">Nihil blanditiis at in nihil autem</a></h4>
-                  <p>Sit recusandae non aspernatur laboriosam. Quia enim eligendi sed ut harum...</p>
-                </div>
-
-                <div class="post-item clearfix">
-                  <img src="{{ asset('style/assets/img/news-2.jpg') }}" alt="">
-                  <h4><a href="#">Quidem autem et impedit</a></h4>
-                  <p>Illo nemo neque maiores vitae officiis cum eum turos elan dries werona nande...</p>
-                </div>
-
-                <div class="post-item clearfix">
-                  <img src="{{ asset('style/assets/img/news-3.jpg') }}" alt="">
-                  <h4><a href="#">Id quia et et ut maxime similique occaecati ut</a></h4>
-                  <p>Fugiat voluptas vero eaque accusantium eos. Consequuntur sed ipsam et totam...</p>
-                </div>
-
-                <div class="post-item clearfix">
-                  <img src="{{ asset('style/assets/img/news-4.jpg') }}" alt="">
-                  <h4><a href="#">Laborum corporis quo dara net para</a></h4>
-                  <p>Qui enim quia optio. Eligendi aut asperiores enim repellendusvel rerum cuder...</p>
-                </div>
-
-                <div class="post-item clearfix">
-                  <img src="{{ asset('style/assets/img/news-5.jpg') }}" alt="">
-                  <h4><a href="#">Et dolores corrupti quae illo quod dolor</a></h4>
-                  <p>Odit ut eveniet modi reiciendis. Atque cupiditate libero beatae dignissimos eius...</p>
-                </div>
-
+                @foreach($pengumuman as $key => $item)
+                  @if($key < 5)
+                    <div class="post-item clearfix">
+                      @if(isset($item['attachment']) && !empty($item['attachment']))
+                        @foreach($item['attachment'] as $attachment)
+                          @if($attachment['attachment_type'] == 'file_cover')
+                            <img src="{{ $attachment['path'] }}" alt="cover" style="width: 100px; height: 100px; margin-right:18px">
+                            @break
+                          @endif
+                        @endforeach
+                      @endif
+                      <h4><a href="#">{{ $item['judul_pengumuman'] }}</a></h4>
+                      <p>{{ Str::limit($item['deskripsi'], 200) }} @if(Str::length($item['deskripsi']) > 300) <a href="#">Selengkapnya</a> @endif</p>
+                    </div>
+                  @endif
+                @endforeach
               </div><!-- End sidebar recent posts-->
             </div>
-            </div>
-          </div><!-- End News & Updates -->
+          </div>
+        </div><!-- End News & Updates -->
         </div>
 
       {{-- </div> --}}

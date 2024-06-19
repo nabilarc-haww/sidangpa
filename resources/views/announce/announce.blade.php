@@ -34,7 +34,7 @@
                 <div class="row">
                   <div class="col-md-6"></div>
                   <div class="col-md-6 pb-3" style="padding-left: 350px">
-                    <a type="button" href="/pengumuman/tambah" class="btn btn-success" style="background-color: #04BC00;" >
+                    <a type="button" href="/pengumuman/tambah" class="btn btn-success" style="background-color: #04BC00;">
                       + Tambah Pengumuman
                     </a>
                   </div>
@@ -49,18 +49,36 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
+                                  <th>Dibuat pada </th>
                                   <th>Judul Pengumuman</th>
                                   <th>Deskripsi</th>
                                   <th>Status</th>
+                                  <th>Cover</th>
+                                  <th>File Lampiran</th>
                                   <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($pengumuman as $item)
                                 <tr>
+                                  <td>{{ \Carbon\Carbon::parse($item['created_at'])->locale('id')->isoFormat('DD MMMM YYYY') }}</td>
                                   <td>{{ $item['judul_pengumuman'] }}</td>
                                   <td>{{ $item['deskripsi'] }}</td>
                                   <td>{{ $item['status'] }}</td>
+                                  <td>
+                                    @foreach($item['attachment'] as $attachment)
+                                      @if($attachment['attachment_type'] == 'file_cover')
+                                        <img src="{{ $attachment['path'] }}" alt="Cover Image" style="width: 100px; height: auto;">
+                                      @endif
+                                    @endforeach
+                                  </td>
+                                  <td>
+                                    @foreach($item['attachment'] as $attachment)
+                                      @if($attachment['attachment_type'] == 'file_lampiran')
+                                        <a href="{{ $attachment['path'] }}" target="_blank">{{ $attachment['nama_file'] }}</a>
+                                      @endif
+                                    @endforeach
+                                  </td>
                                   <td>
                                     <div class="d-flex">
                                       <a href="{{ route('pengumuman.editPengumuman', $item['id_pengumuman']) }}" class="btn btn-primary btn-sm me-2">
@@ -75,7 +93,7 @@
                                   </td>
                                 </tr>
                                 @endforeach
-                              </tbody>
+                            </tbody>
                         </table>
                         <!-- End Table with stripped rows -->
           

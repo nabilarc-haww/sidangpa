@@ -10,9 +10,9 @@ use App\Http\Controllers\DataProyekAkhirController;
 use App\Http\Controllers\AuthController;
 
 
-Route::get('/',function () {
-    return view('home');
-});
+// web.php
+Route::get('/', [PengumumanController::class, 'getDataAnnounceDashboard']);
+
 
 Route::get('/proyek-akhir/generate/{id_header}', [ProyekAkhirController::class, 'generate'])->name('proyek-akhir.generate');
 Route::get('/proyek-akhir/generate-hasil/{id_header}', [ProyekAkhirController::class, 'getData'])->name('proyek-akhir.getdata');
