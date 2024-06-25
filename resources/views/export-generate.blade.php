@@ -40,6 +40,7 @@
                         <th>NRP</th>
                         <th>Nama Mahasiswa</th>
                         <th>Judul PA</th>
+                        <th>Moderator</th>
                         <th>Pembimbing 1</th>
                         <th>Pembimbing 2</th>
                         <th>Pembimbing 3</th>
@@ -53,6 +54,7 @@
                             <td>{{ $data['id_mhs']['nrp_mahasiswa'] }}</td>
                             <td>{{ $data['id_mhs']['nama_mahasiswa'] }}</td>
                             <td>{{ $data['id_mhs']['judul_pa'] }}</td>
+                            <td>{{ $data['id_moderator']['nama_dosen'] ?? "kosong" }}</td>
                             <td>{{ $data['id_mhs']['dosen_pembimbing1']['nama_dosen'] }}</td>
                             <td>{{ $data['id_mhs']['dosen_pembimbing2']['nama_dosen'] }}</td>
                             <td>{{ $data['id_mhs']['dosen_pembimbing3']['nama_dosen'] }}</td>

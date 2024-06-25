@@ -52,6 +52,17 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="id_moderator">Moderator</label>
+                            <select name="id_moderator" class="form-control" required>
+                                @foreach($dosen as $d)
+                                    <option value="{{ $d['id_dosen'] }}" {{ $d['id_dosen'] == $data_generate['id_moderator']['id_dosen'] ? 'selected' : '' }}>
+                                        {{ $d['nama_dosen'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <label for="penguji_1">Penguji 1</label>
                             <select name="penguji_1" class="form-control" required>
                                 @foreach($dosen as $d)

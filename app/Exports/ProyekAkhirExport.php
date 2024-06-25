@@ -34,6 +34,7 @@ class ProyekAkhirExport implements FromView, WithHeadings
             'Nama Ruang',
             'Nama Mahasiswa',
             'Judul PA',
+            'Moderator',
             'Pembimbing 1',
             'Pembimbing 2',
             'Pembimbing 3',

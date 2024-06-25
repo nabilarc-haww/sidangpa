@@ -89,6 +89,7 @@
                 <tr>
                   <th class="judul-tabel">Nama Mahasiswa</th>
                   <th class="judul-tabel">Judul</th>
+                  <th class="judul-tabel">Moderator</th>
                   <th class="judul-tabel">Pembimbing 1</th>
                   <th class="judul-tabel">Pembimbing 2</th>
                   <th class="judul-tabel">Pembimbing 3</th>
@@ -102,6 +103,7 @@
                 <tr>
                   <td class="isi-tabel">{{ $data['id_mhs']['nama_mahasiswa'] }}</td>
                   <td class="isi-tabel">{{ $data['id_mhs']['judul_pa'] }}</td>
+                  <td class="isi-tabel">{{ $data['id_moderator']['nama_dosen'] ?? "kosong"}} </td>
                   <td class="isi-tabel">{{ $data['id_mhs']['dosen_pembimbing1']['nama_dosen'] }}</td>
                   <td class="isi-tabel">{{ $data['id_mhs']['dosen_pembimbing2']['nama_dosen'] }}</td>
                   <td class="isi-tabel">{{ $data['id_mhs']['dosen_pembimbing3']['nama_dosen'] }}</td>

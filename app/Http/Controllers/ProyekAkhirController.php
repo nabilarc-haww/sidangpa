@@ -44,11 +44,10 @@ class ProyekAkhirController extends Controller
             'Authorization' => 'Bearer ' . $this->supabaseApiKey,
         ])->get($this->supabaseUrl . '/rest/v1/header', [
             'id_header' => 'eq.' . $id_header,
-            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*,riset_group(*)),penguji_1(*),penguji_2(*))'
+            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*,riset_group(*)),penguji_1(*),penguji_2(*),id_moderator(*))'
         ]);
     
         $proyek_akhir = $response->json();
-    
         $finalResult = [];
     
         foreach ($proyek_akhir as $header) {
@@ -141,11 +140,12 @@ class ProyekAkhirController extends Controller
                 'apikey' => $this->supabaseApiKey,
                 'Content-Type' => 'application/json',
             ])->post($this->supabaseUrl . '/rest/v1/proyek_akhir_mhs', $importData);
-    
+     
             if ($response->successful()) {
                 $id_header = session('id_header');
-    
+                
                 if ($id_header) {
+                    // dd($importData);
                     return $this->generate($id_header, $importData)
                             ->with('success', 'Data header berhasil disimpan.');
                 } else {
@@ -165,7 +165,7 @@ class ProyekAkhirController extends Controller
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-    
+            // dd($importData);
             return redirect('/proyek-akhir/jadwal')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -176,26 +176,26 @@ class ProyekAkhirController extends Controller
         $risetGroupsResponse = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
         ])->get('https://ihpqktbogxquohofeevj.supabase.co/rest/v1/riset_group?select=*,dosen(*),ruang(*)');
-    
+
         // Use importData instead of fetching mahasiswaResponse from API
         $mahasiswaData = $importData;
-    
+
         $headerResponse = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
         ])->get("https://ihpqktbogxquohofeevj.supabase.co/rest/v1/header?id_header=eq.{$id_header}");
-    
+
         // Check if the data retrieval was successful
         if ($risetGroupsResponse->failed() || $headerResponse->failed()) {
             return response()->json(['error' => 'Failed to retrieve data from API'], 500);
         }
-    
+
         // Get the JSON response from the API calls
         $risetGroups = $risetGroupsResponse->json();
         $headerData = $headerResponse->json();
-    
+
         // Initialize combinedData array grouped by riset_group
         $groupedData = [];
-    
+
         // Create a mapping of dosen id to dosen name for quick lookup
         $dosenMap = [];
         foreach ($risetGroups as $risetGroup) {
@@ -203,8 +203,8 @@ class ProyekAkhirController extends Controller
                 $dosenMap[$dosen['id_dosen']] = $dosen['nama_dosen'];
             }
         }
-    
-        // Loop through each proyek_akhir_mhs entry
+
+        // Loop through each mahasiswa entry
         foreach ($mahasiswaData as $mahasiswa) {
             // Find the corresponding riset_group based on dosen_pembimbing1
             foreach ($risetGroups as $risetGroup) {
@@ -218,7 +218,7 @@ class ProyekAkhirController extends Controller
                                 'mahasiswa' => [],
                             ];
                         }
-    
+
                         // Add the mahasiswa to the corresponding riset_group entry
                         $groupedData[$risetGroup['id_rg']]['mahasiswa'][] = $mahasiswa;
                         break 2; // Break both inner loops
@@ -226,86 +226,122 @@ class ProyekAkhirController extends Controller
                 }
             }
         }
-    
-        // Assign examiners to each mahasiswa
-        foreach ($groupedData as &$group) {
-            $dosenList = $group['riset_group']['dosen'];
-    
-            foreach ($group['mahasiswa'] as &$mahasiswa) {
-                $dosenPembimbing1 = $mahasiswa['dosen_pembimbing1'];
-                $dosenPembimbing2 = $mahasiswa['dosen_pembimbing2'] ?? null;
-                $dosenPembimbing3 = $mahasiswa['dosen_pembimbing3'] ?? null;
-    
-                // Add names for pembimbing
-                $mahasiswa['nama_dosen_pembimbing1'] = $dosenMap[$dosenPembimbing1] ?? null;
-                $mahasiswa['nama_dosen_pembimbing2'] = $dosenMap[$dosenPembimbing2] ?? null;
-                $mahasiswa['nama_dosen_pembimbing3'] = $dosenMap[$dosenPembimbing3] ?? null;
-    
-                // Filter dosen available to be penguji
-                $availableDosen = array_filter($dosenList, function($dosen) use ($dosenPembimbing1, $dosenPembimbing2, $dosenPembimbing3) {
-                    return $dosen['id_dosen'] !== $dosenPembimbing1
-                        && $dosen['id_dosen'] !== $dosenPembimbing2
-                        && $dosen['id_dosen'] !== $dosenPembimbing3
-                        && $dosen['available']; // Only include dosen who are available
-                });
-    
-                $availableDosen = array_values($availableDosen); // Re-index the array
-    
-                if (count($availableDosen) >= 2) {
-                    $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
-                    $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
-                    $mahasiswa['penguji2'] = $availableDosen[1]['id_dosen'];
-                    $mahasiswa['nama_penguji2'] = $availableDosen[1]['nama_dosen'];
-                } elseif (count($availableDosen) === 1) {
-                    $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
-                    $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
-                    $mahasiswa['penguji2'] = null;
-                    $mahasiswa['nama_penguji2'] = null;
-                } else {
-                    $mahasiswa['penguji1'] = null;
-                    $mahasiswa['nama_penguji1'] = null;
-                    $mahasiswa['penguji2'] = null;
-                    $mahasiswa['nama_penguji2'] = null;
-                }
-            }
-        }
-    
-        // Group mahasiswa by their penguji (examiners)
+
+        // Distribute mahasiswa into available rooms
         foreach ($groupedData as &$group) {
             $rooms = $group['riset_group']['ruang'];
             $roomCount = count($rooms);
-    
-            if ($roomCount > 0) {
-                // Distribute mahasiswa to rooms ensuring each dosen_pembimbing1 is in one room only
-                $mahasiswaPerDosen = [];
-                foreach ($group['mahasiswa'] as $mahasiswa) {
-                    $dosenPembimbing1 = $mahasiswa['dosen_pembimbing1'];
-                    if (!isset($mahasiswaPerDosen[$dosenPembimbing1])) {
-                        $mahasiswaPerDosen[$dosenPembimbing1] = [];
-                    }
-                    $mahasiswaPerDosen[$dosenPembimbing1][] = $mahasiswa;
+            $mahasiswaList = $group['mahasiswa'];
+            $mahasiswaCount = count($mahasiswaList);
+
+            for ($i = 0; $i < $mahasiswaCount; $i++) {
+                $roomIndex = $i % $roomCount;
+                if (!isset($rooms[$roomIndex]['mahasiswa'])) {
+                    $rooms[$roomIndex]['mahasiswa'] = [];
                 }
-    
-                $roomIndex = 0;
-                foreach ($mahasiswaPerDosen as $mahasiswaGroup) {
-                    if (!isset($rooms[$roomIndex]['mahasiswa'])) {
-                        $rooms[$roomIndex]['mahasiswa'] = [];
-                    }
-                    $rooms[$roomIndex]['mahasiswa'] = array_merge($rooms[$roomIndex]['mahasiswa'], $mahasiswaGroup);
-                    $roomIndex = ($roomIndex + 1) % $roomCount;
-                }
+                $rooms[$roomIndex]['mahasiswa'][] = $mahasiswaList[$i];
             }
-    
+
             // Assign updated rooms back to the riset_group
             $group['riset_group']['ruang'] = $rooms;
         }
-    
+
+        // Assign examiners to each mahasiswa ensuring no duplicate examiners across rooms
+        foreach ($groupedData as &$group) {
+            $dosenList = $group['riset_group']['dosen'];
+            $assignedExaminers = [];
+
+            foreach ($group['riset_group']['ruang'] as &$ruang) {
+                $availableDosen = array_filter($dosenList, function($dosen) use ($assignedExaminers) {
+                    return !isset($assignedExaminers[$dosen['id_dosen']]);
+                });
+
+                $availableDosen = array_values($availableDosen); // Re-index the array
+
+                foreach ($ruang['mahasiswa'] as &$mahasiswa) {
+                    $dosenPembimbing1 = $mahasiswa['dosen_pembimbing1'];
+                    $dosenPembimbing2 = $mahasiswa['dosen_pembimbing2'] ?? null;
+                    $dosenPembimbing3 = $mahasiswa['dosen_pembimbing3'] ?? null;
+
+                    // Add names for pembimbing
+                    $mahasiswa['nama_dosen_pembimbing1'] = $dosenMap[$dosenPembimbing1] ?? null;
+                    $mahasiswa['nama_dosen_pembimbing2'] = $dosenMap[$dosenPembimbing2] ?? null;
+                    $mahasiswa['nama_dosen_pembimbing3'] = $dosenMap[$dosenPembimbing3] ?? null;
+
+                    // Filter out pembimbing from available examiners
+                    $availableDosenForMahasiswa = array_filter($availableDosen, function($dosen) use ($dosenPembimbing1, $dosenPembimbing2, $dosenPembimbing3) {
+                        return $dosen['id_dosen'] !== $dosenPembimbing1
+                            && $dosen['id_dosen'] !== $dosenPembimbing2
+                            && $dosen['id_dosen'] !== $dosenPembimbing3
+                            && $dosen['available'];
+                    });
+
+                    $availableDosenForMahasiswa = array_values($availableDosenForMahasiswa); // Re-index the array
+
+                    if (count($availableDosenForMahasiswa) >= 2) {
+                        $mahasiswa['penguji1'] = $availableDosenForMahasiswa[0]['id_dosen'];
+                        $mahasiswa['nama_penguji1'] = $availableDosenForMahasiswa[0]['nama_dosen'];
+                        $mahasiswa['penguji2'] = $availableDosenForMahasiswa[1]['id_dosen'];
+                        $mahasiswa['nama_penguji2'] = $availableDosenForMahasiswa[1]['nama_dosen'];
+                        $assignedExaminers[$availableDosenForMahasiswa[0]['id_dosen']] = true;
+                        $assignedExaminers[$availableDosenForMahasiswa[1]['id_dosen']] = true;
+                    } elseif (count($availableDosenForMahasiswa) === 1) {
+                        $mahasiswa['penguji1'] = $availableDosenForMahasiswa[0]['id_dosen'];
+                        $mahasiswa['nama_penguji1'] = $availableDosenForMahasiswa[0]['nama_dosen'];
+                        $mahasiswa['penguji2'] = null;
+                        $mahasiswa['nama_penguji2'] = null;
+                        $assignedExaminers[$availableDosenForMahasiswa[0]['id_dosen']] = true;
+                    } else {
+                        // Ensure there is no null value for examiners
+                        if (!empty($availableDosen)) {
+                            $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
+                            $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
+                            $mahasiswa['penguji2'] = $availableDosen[1]['id_dosen'] ?? null;
+                            $mahasiswa['nama_penguji2'] = $availableDosen[1]['nama_dosen'] ?? null;
+                            $assignedExaminers[$availableDosen[0]['id_dosen']] = true;
+                            if (isset($availableDosen[1])) {
+                                $assignedExaminers[$availableDosen[1]['id_dosen']] = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Ensure no penguji1 or penguji2 is empty
+        foreach ($groupedData as &$group) {
+            $dosenList = $group['riset_group']['dosen'];
+            foreach ($group['riset_group']['ruang'] as &$ruang) {
+                foreach ($ruang['mahasiswa'] as &$mahasiswa) {
+                    if (is_null($mahasiswa['penguji1']) || is_null($mahasiswa['penguji2'])) {
+                        $availableDosen = array_filter($dosenList, function($dosen) use ($mahasiswa) {
+                            return $dosen['id_dosen'] !== $mahasiswa['dosen_pembimbing1']
+                                && $dosen['id_dosen'] !== $mahasiswa['penguji1']
+                                && $dosen['id_dosen'] !== $mahasiswa['penguji2']
+                                && $dosen['available'];
+                        });
+                        $availableDosen = array_values($availableDosen); // Re-index the array
+
+                        if (is_null($mahasiswa['penguji1']) && !empty($availableDosen)) {
+                            $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
+                            $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
+                        }
+                        if (is_null($mahasiswa['penguji2']) && !empty($availableDosen) && isset($availableDosen[1])) {
+                            $mahasiswa['penguji2'] = $availableDosen[1]['id_dosen'];
+                            $mahasiswa['nama_penguji2'] = $availableDosen[1]['nama_dosen'];
+                        }
+                    }
+                }
+            }
+        }
+
         // Create the new response array with only the required fields
         $response = [];
         foreach ($groupedData as $group) {
             foreach ($group['riset_group']['ruang'] as $ruang) {
                 foreach ($ruang['mahasiswa'] as $mahasiswa) {
                     $response[] = [
+                        'id_moderator' => $mahasiswa['dosen_pembimbing1'],
                         'penguji_1' => $mahasiswa['penguji1'],
                         'penguji_2' => $mahasiswa['penguji2'],
                         'id_mhs' => $mahasiswa['id_mhs'],
@@ -315,20 +351,32 @@ class ProyekAkhirController extends Controller
                 }
             }
         }
-    
+
+        // Logic to check and remove duplicate mahasiswa in $response
+        $uniqueResponse = [];
+        $existingMhsIds = [];
+        foreach ($response as $entry) {
+            if (!in_array($entry['id_mhs'], $existingMhsIds)) {
+                $uniqueResponse[] = $entry;
+                $existingMhsIds[] = $entry['id_mhs'];
+            }
+        }
+
         // Send the response data to the database
         $postResponse = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
-        ])->post($this->supabaseUrl . '/rest/v1/data_generate', $response);
-    
+        ])->post($this->supabaseUrl . '/rest/v1/data_generate', $uniqueResponse);
+
         // Check if the post request was successful
         if ($postResponse->failed()) {
             return response()->json(['error' => 'Failed to send data to the database'], 500);
         }
-    
+
         session(['id_header' => $id_header]);
         return redirect('/proyek-akhir/generate-hasil/'.$id_header)->with('success', 'Data header berhasil disimpan.');
     }
+
+    
     
     public function getDataGenerate(Request $request)
     {
@@ -355,15 +403,13 @@ class ProyekAkhirController extends Controller
         return view('card', compact('headers', 'tahunAjaranList'));
     }
 
-
-
     public function edit($id_jadwal_generate)
     {
         $response = Http::withHeaders([
             'apikey' => $this->supabaseApiKey,
         ])->get($this->supabaseUrl . '/rest/v1/data_generate', [
             'id_jadwal_generate' => 'eq.' . $id_jadwal_generate,
-            'select' => '*,penguji_1(*),penguji_2(*),id_mhs(*,dosen_pembimbing1(*), dosen_pembimbing2(*), dosen_pembimbing3(*))'
+            'select' => '*,penguji_1(*),penguji_2(*),id_moderator(*),id_mhs(*,dosen_pembimbing1(*), dosen_pembimbing2(*), dosen_pembimbing3(*))'
         ]);
 
         $data = $response->json();
@@ -394,6 +440,7 @@ class ProyekAkhirController extends Controller
     public function update(Request $request, $id_jadwal_generate)
     {
         $validatedData = $request->validate([
+            'id_moderator' => 'required|uuid',
             'penguji_1' => 'required|uuid',
             'penguji_2' => 'required|uuid',
             'id_ruang' => 'required|uuid',
@@ -424,7 +471,7 @@ class ProyekAkhirController extends Controller
             'apikey' => $this->supabaseApiKey,
         ])->get($this->supabaseUrl . '/rest/v1/header', [
             'id_header' => 'eq.' . $id_header,
-            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*,riset_group(*)),penguji_1(*),penguji_2(*))'
+            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*,riset_group(*)),penguji_1(*),penguji_2(*),id_moderator(*))'
         ]);
 
         $proyek_akhir = $response->json();
@@ -484,7 +531,7 @@ class ProyekAkhirController extends Controller
             'apikey' => $this->supabaseApiKey,
         ])->get($this->supabaseUrl . '/rest/v1/header', [
             'id_header' => 'eq.' . $id_header,
-            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*,riset_group(*)),penguji_1(*),penguji_2(*))'
+            'select' => '*,data_generate(*,id_mhs(*,dosen_pembimbing1(*),dosen_pembimbing2(*),dosen_pembimbing3(*)),id_ruang(*,riset_group(*)),penguji_1(*),penguji_2(*),id_moderator(*))'
         ]);
 
         $proyek_akhir = $response->json();
