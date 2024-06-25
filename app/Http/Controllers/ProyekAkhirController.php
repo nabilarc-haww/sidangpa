@@ -376,8 +376,6 @@ class ProyekAkhirController extends Controller
         return redirect('/proyek-akhir/generate-hasil/'.$id_header)->with('success', 'Data header berhasil disimpan.');
     }
 
-    
-    
     public function getDataGenerate(Request $request)
     {
         $tahunAjaran = $request->input('tahun_ajaran');

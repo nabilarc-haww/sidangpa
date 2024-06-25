@@ -31,6 +31,62 @@
     </div>
 </div>
 
+<!-- Tambah Data Master PA Modal -->
+<div class="modal fade" id="tambahDataMasterPaModal" tabindex="-1" aria-labelledby="tambahDataMasterPaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tambahDataMasterPaModalLabel">Tambah Data Master PA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ route('proyek-akhir.data.tambahDataMasterPa') }}">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="inputState" class="form-label">Tahun Ajaran</label>
+                        <div class="row">
+                            <div class="col-5">
+                                <select name="start_year" class="form-control" id="startYear" required>
+                                    <!-- Years will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-2 text-center">
+                                <h5>/</h5>
+                            </div>
+                            <div class="col-5">
+                                <select name="end_year" class="form-control" id="endYear" required>
+                                    <!-- Years will be populated by JavaScript -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputState" class="form-label">Program Studi</label>
+                        <select name="jurusan" id="inputState" class="form-select" required>
+                            <option selected disabled>Program Studi</option>
+                            <option value="D3 Teknik Informatika">D3 Teknik Informatika</option>
+                            <!-- Tambahkan opsi lainnya jika perlu -->
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tambah Data Master PA Button -->
+<div class="row mb-4">
+    <div class="col text-end">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahDataMasterPaModal">
+            Tambah Data Master PA
+        </button>
+    </div>
+</div>
+
 <!-- Download Modal -->
 <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -138,6 +194,25 @@ document.addEventListener('DOMContentLoaded', function() {
         downloadExcel.href = '/proyek-akhir/export/' + idMaster + '?format=excel';
         downloadCsv.href = '/proyek-akhir/export/' + idMaster + '?format=csv';
     });
+});
+
+// Function to populate year dropdowns
+function populateYearDropdowns(startYearId, endYearId, startYear, endYear) {
+    const startYearSelect = document.getElementById(startYearId);
+    const endYearSelect = document.getElementById(endYearId);
+
+    for (let year = startYear; year <= endYear; year++) {
+        let option = document.createElement("option");
+        option.value = year;
+        option.text = year;
+        startYearSelect.appendChild(option.cloneNode(true));
+        endYearSelect.appendChild(option);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const currentYear = new Date().getFullYear();
+    populateYearDropdowns('startYear', 'endYear', 2010, currentYear + 10);
 });
 </script>
 

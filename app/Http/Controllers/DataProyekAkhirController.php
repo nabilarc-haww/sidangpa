@@ -32,6 +32,24 @@ class DataProyekAkhirController extends Controller
         return view('proyek_akhir/public_pa', compact('data_pa', 'id_master', 'dosen'));
     }
 
+    public function tambahDataMasterPa(Request $request)
+    {
+        $request->validate([
+            'start_year' => 'required|integer',
+            'end_year' => 'required|integer|gte:start_year',
+            'jurusan' => 'required',
+        ]);
+
+        $tahun_ajaran = $request->start_year . ' / ' . $request->end_year;
+
+        DB::table('public.master_pa')->insert([
+            'tahun_ajaran' => $tahun_ajaran,
+            'jurusan' => $request->jurusan,
+            'created_at' => now(),
+        ]);
+
+        return redirect()->route('proyek-akhir.data.filter')->with('success', 'Data Master PA berhasil ditambahkan.');
+    }
 
     public function filterByDosen(Request $request, $id_master)
     {
