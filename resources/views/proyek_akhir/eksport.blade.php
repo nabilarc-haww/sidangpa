@@ -6,19 +6,19 @@
     <title>Export Data Proyek Akhir</title>
 </head>
 <body>
-    @foreach($data_pa as $master)
-        <table>
-            <thead>
-                <tr>
-                    <th>nrp_mahasiswa</th>
-                    <th>nama_mahasiswa</th>
-                    <th>judul_pa</th>
-                    <th>dosen_pembimbing1</th>
-                    <th>dosen_pembimbing2</th>
-                    <th>dosen_pembimbing3</th>
-                </tr>
-            </thead>
-            <tbody>
+    <table>
+        <thead>
+            <tr>
+                <th>nrp_mahasiswa</th>
+                <th>nama_mahasiswa</th>
+                <th>judul_pa</th>
+                <th>dosen_pembimbing1</th>
+                <th>dosen_pembimbing2</th>
+                <th>dosen_pembimbing3</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($data_pa as $master)
                 @foreach($master['proyek_akhir'] as $data)
                     <tr>
                         <td>{{ $data['nrp_mahasiswa'] }}</td>
@@ -29,8 +29,8 @@
                         <td>{{ $data['dosen_pembimbing3']['id_dosen'] ?? '-' }}</td>
                     </tr>
                 @endforeach
-            </tbody>
-        </table>
-    @endforeach
+            @endforeach
+        </tbody>
+    </table>
 </body>
 </html>

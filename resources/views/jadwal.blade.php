@@ -106,6 +106,7 @@
                     <select name="prodi" id="inputState" class="form-select" placeholder="Pilihlah program studi">
                         <option selected disabled>Program Studi</option>
                         <option>D3 Teknik Informatika</option>
+                        <option>D4 Teknik Informatika</option>
                     </select>
                 </div>
                 <div class="row">
@@ -123,6 +124,9 @@
                       <select name="tahapan_sidang" id="inputState" class="form-select" placeholder="Pilihlah tahapan sidang">
                           <option selected disabled>Tahapan Sidang</option>
                           <option>Sidang Proposal Proyek Akhir (SPPA)</option>
+                          <option>Sidang Progress Proyek Akhir</option>
+                          <option>Sidang Evaluasi Proyek Akhir (PA 1)</option>
+                          <option>Sidang Ujian Proyek Akhir (PA 2)</option>
                       </select>
                   </div>
                   <div class="col-12 mt-3 mb-3">

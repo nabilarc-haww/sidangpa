@@ -74,7 +74,7 @@ class ProyekAkhirController extends Controller
                         $addData = false;
                     }
     
-                    if ($penguji_1 && (!isset($data['penguji_1']['nama_dosen']) || $data['penguji_1']['nama_dosen'] != $penguji_1)) {
+                    if ($penguji_1 && (!isset($data['penguji_1']) || !isset($data['penguji_1']['nama_dosen']) || $data['penguji_1']['nama_dosen'] != $penguji_1)) {
                         $addData = false;
                     }
     
@@ -165,7 +165,7 @@ class ProyekAkhirController extends Controller
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            // dd($importData);
+            
             return redirect('/proyek-akhir/jadwal')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -226,7 +226,6 @@ class ProyekAkhirController extends Controller
                 }
             }
         }
-
         // Distribute mahasiswa into available rooms
         foreach ($groupedData as &$group) {
             $rooms = $group['riset_group']['ruang'];
@@ -245,7 +244,7 @@ class ProyekAkhirController extends Controller
             // Assign updated rooms back to the riset_group
             $group['riset_group']['ruang'] = $rooms;
         }
-
+        
         // Assign examiners to each mahasiswa ensuring no duplicate examiners across rooms
         foreach ($groupedData as &$group) {
             $dosenList = $group['riset_group']['dosen'];
@@ -277,7 +276,7 @@ class ProyekAkhirController extends Controller
                     });
 
                     $availableDosenForMahasiswa = array_values($availableDosenForMahasiswa); // Re-index the array
-
+                    
                     if (count($availableDosenForMahasiswa) >= 2) {
                         $mahasiswa['penguji1'] = $availableDosenForMahasiswa[0]['id_dosen'];
                         $mahasiswa['nama_penguji1'] = $availableDosenForMahasiswa[0]['nama_dosen'];
@@ -293,42 +292,51 @@ class ProyekAkhirController extends Controller
                         $assignedExaminers[$availableDosenForMahasiswa[0]['id_dosen']] = true;
                     } else {
                         // Ensure there is no null value for examiners
-                        if (!empty($availableDosen)) {
-                            $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
-                            $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
-                            $mahasiswa['penguji2'] = $availableDosen[1]['id_dosen'] ?? null;
-                            $mahasiswa['nama_penguji2'] = $availableDosen[1]['nama_dosen'] ?? null;
-                            $assignedExaminers[$availableDosen[0]['id_dosen']] = true;
-                            if (isset($availableDosen[1])) {
-                                $assignedExaminers[$availableDosen[1]['id_dosen']] = true;
+                        if($headerData['prodi'] = 'D3 Teknik Informatika'){
+                            if (!empty($availableDosen)) {
+                                $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
+                                $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
+                                $mahasiswa['penguji2'] = $availableDosen[1]['id_dosen'] ?? null;
+                                $mahasiswa['nama_penguji2'] = $availableDosen[1]['nama_dosen'] ?? null;
+                                $assignedExaminers[$availableDosen[0]['id_dosen']] = true;
+                                if (isset($availableDosen[1])) {
+                                    $assignedExaminers[$availableDosen[1]['id_dosen']] = true;
+                                }
                             }
                         }
                     }
+                    // dd($response);
                 }
+                // dd( $response);
             }
+            // dd( $response);
+            // dd($groupedData);
         }
-
+        
+        //penguji menghilang
         // Ensure no penguji1 or penguji2 is empty
-        foreach ($groupedData as &$group) {
-            $dosenList = $group['riset_group']['dosen'];
-            foreach ($group['riset_group']['ruang'] as &$ruang) {
-                foreach ($ruang['mahasiswa'] as &$mahasiswa) {
-                    if (is_null($mahasiswa['penguji1']) || is_null($mahasiswa['penguji2'])) {
-                        $availableDosen = array_filter($dosenList, function($dosen) use ($mahasiswa) {
-                            return $dosen['id_dosen'] !== $mahasiswa['dosen_pembimbing1']
-                                && $dosen['id_dosen'] !== $mahasiswa['penguji1']
-                                && $dosen['id_dosen'] !== $mahasiswa['penguji2']
-                                && $dosen['available'];
-                        });
-                        $availableDosen = array_values($availableDosen); // Re-index the array
+        if($headerData['prodi'] = 'D3 Teknik Informatika'){
+            foreach ($groupedData as &$group) {
+                $dosenList = $group['riset_group']['dosen'];
+                foreach ($group['riset_group']['ruang'] as &$ruang) {
+                    foreach ($ruang['mahasiswa'] as &$mahasiswa) {
+                        if (is_null($mahasiswa['penguji1']) || is_null($mahasiswa['penguji2'])) {
+                            $availableDosen = array_filter($dosenList, function($dosen) use ($mahasiswa) {
+                                return $dosen['id_dosen'] !== $mahasiswa['dosen_pembimbing1']
+                                    && $dosen['id_dosen'] !== $mahasiswa['penguji1']
+                                    && $dosen['id_dosen'] !== $mahasiswa['penguji2']
+                                    && $dosen['available'];
+                            });
+                            $availableDosen = array_values($availableDosen); // Re-index the array
 
-                        if (is_null($mahasiswa['penguji1']) && !empty($availableDosen)) {
-                            $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
-                            $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
-                        }
-                        if (is_null($mahasiswa['penguji2']) && !empty($availableDosen) && isset($availableDosen[1])) {
-                            $mahasiswa['penguji2'] = $availableDosen[1]['id_dosen'];
-                            $mahasiswa['nama_penguji2'] = $availableDosen[1]['nama_dosen'];
+                            if (is_null($mahasiswa['penguji1']) && !empty($availableDosen)) {
+                                $mahasiswa['penguji1'] = $availableDosen[0]['id_dosen'];
+                                $mahasiswa['nama_penguji1'] = $availableDosen[0]['nama_dosen'];
+                            }
+                            if (is_null($mahasiswa['penguji2']) && !empty($availableDosen) && isset($availableDosen[1])) {
+                                $mahasiswa['penguji2'] = $availableDosen[1]['id_dosen'];
+                                $mahasiswa['nama_penguji2'] = $availableDosen[1]['nama_dosen'];
+                            }
                         }
                     }
                 }
@@ -351,8 +359,9 @@ class ProyekAkhirController extends Controller
                 }
             }
         }
+       
 
-        // Logic to check and remove duplicate mahasiswa in $response
+        //Logic to check and remove duplicate mahasiswa in $response
         $uniqueResponse = [];
         $existingMhsIds = [];
         foreach ($response as $entry) {

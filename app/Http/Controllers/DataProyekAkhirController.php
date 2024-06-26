@@ -222,8 +222,6 @@ class DataProyekAkhirController extends Controller
         return view('proyek_akhir/card_pa', compact('master_pa', 'program_studi_list', 'tahun_ajaran_list'));
     }
 
-
-
     public function exportDataProyek(Request $request, $id_master)
     {
         $response = Http::withHeaders([
